@@ -666,14 +666,18 @@
                             <label>Separate Water Metering</label>
                             <div class="radio-group">
                                 <div class="radio-item">
-                                    <input type="radio" name="separateWater" value="Yes">
+                                    <input type="radio" name="separateWater" value="Yes" onchange="document.getElementById('waterMeterNotes').classList.remove('hidden')">
                                     <label>Yes</label>
                                 </div>
                                 <div class="radio-item">
-                                    <input type="radio" name="separateWater" value="No" checked>
+                                    <input type="radio" name="separateWater" value="No" checked onchange="document.getElementById('waterMeterNotes').classList.add('hidden')">
                                     <label>No</label>
                                 </div>
                             </div>
+                        </div>
+                        <div id="waterMeterNotes" class="form-group hidden">
+                            <label>Water Meter Notes</label>
+                            <textarea name="waterMeterNotes" placeholder="Location or other info about water meter"></textarea>
                         </div>
                     </div>
                 </div>
@@ -1049,7 +1053,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label>Other Rooms (Study, Powder Room, etc.)</label>
+                                <label>Room Notes (Study, Powder Room, etc.)</label>
                                 <textarea name="otherRoomsApt" placeholder="List any other rooms"></textarea>
                             </div>
                         </div>
@@ -1057,6 +1061,44 @@
                         <div id="aptSplitLevelContainer" class="hidden">
                             <div id="aptSplitLevels"></div>
                             <button type="button" class="add-btn" onclick="addAptLevel()" style="margin-top: 12px;">+ Add Level</button>
+                        </div>
+
+                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #eee;">
+                            <div class="form-group">
+                                <label>Laundry Room</label>
+                                <div class="radio-group">
+                                    <div class="radio-item">
+                                        <input type="radio" name="aptLaundryLocation" value="Internal">
+                                        <label>Internal</label>
+                                    </div>
+                                    <div class="radio-item">
+                                        <input type="radio" name="aptLaundryLocation" value="External">
+                                        <label>External</label>
+                                    </div>
+                                    <div class="radio-item">
+                                        <input type="radio" name="aptLaundryLocation" value="Communal">
+                                        <label>Communal</label>
+                                    </div>
+                                    <div class="radio-item">
+                                        <input type="radio" name="aptLaundryLocation" value="None" checked>
+                                        <label>None</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Dryer Included</label>
+                                <div class="radio-group">
+                                    <div class="radio-item">
+                                        <input type="radio" name="aptHasDryer" value="Yes">
+                                        <label>Yes</label>
+                                    </div>
+                                    <div class="radio-item">
+                                        <input type="radio" name="aptHasDryer" value="No" checked>
+                                        <label>No</label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #eee;">
@@ -2042,7 +2084,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Rooms</label>
+                    <label>Room Notes</label>
                     <textarea name="aptRooms_${levelNum}" placeholder="List rooms on this level (e.g., Kitchen, Living, Study)"></textarea>
                 </div>
                 ${levelNum > 1 ? `<button type="button" class="delete-btn" onclick="removeAptLevel(this)" style="width: 100%; margin-top: 8px;">Remove Level</button>` : ''}
@@ -2305,7 +2347,10 @@
                     if (has(inetProv)) embParts.push(`Internet: ${inetProv}`);
                     if (embParts.length) html += `<div style="${lineS}">Embedded network: ${embParts.join(' &nbsp;|&nbsp; ')}</div>`;
                 }
-                html += `<div style="${lineS}">Separate water meter: ${gv('separateWater', 'radio')}</div>`;
+                const sepWater = gv('separateWater', 'radio'), waterNotes = gv('waterMeterNotes', 'textarea');
+                let waterLine = `Separate water meter: ${sepWater}`;
+                if (sepWater === 'Yes' && has(waterNotes)) waterLine += ` — ${waterNotes}`;
+                html += `<div style="${lineS}">${waterLine}</div>`;
 
                 // Apt car & storage
                 let aptCarLine = `Car space: ${gv('aptCarspaceCount') || '0'}`;
@@ -2319,11 +2364,19 @@
                 }
                 html += `<div style="${lineS}">${aptCarLine}</div>`;
             }
+            // Wardrobes (under Features, after car space)
+            const wBI = isChk('wardrobeBuiltIn'), wWI = isChk('wardrobeWalkIn');
+            if (wBI || wWI) {
+                let wp = [];
+                if (wBI) { const n = gv('wardrobeBuiltInNotes', 'textarea'); wp.push(`Built-in${has(n) ? ' — ' + n : ''}`); }
+                if (wWI) { const n = gv('wardrobeWalkInNotes', 'textarea'); wp.push(`Walk-in${has(n) ? ' — ' + n : ''}`); }
+                html += `<div style="${lineS}"><b>Wardrobes:</b> ${wp.join(' &nbsp;|&nbsp; ')}</div>`;
+            }
 
             // ── ACCOMMODATION (level table — only table we keep, content is short/controlled) ──
             html += `<div style="${secHead}">Accommodation</div>`;
             html += `<table style="width: 100%; border-collapse: collapse; margin-bottom: 2px;">`;
-            html += `<tr><td style="${tCellH} width: 25%;">Level</td><td style="${tCellH} width: 12%; text-align: center;">Bed</td><td style="${tCellH} width: 15%; text-align: center;">Bath</td><td style="${tCellH}">Other Rooms</td></tr>`;
+            html += `<tr><td style="${tCellH} width: 25%;">Level</td><td style="${tCellH} width: 12%; text-align: center;">Bed</td><td style="${tCellH} width: 15%; text-align: center;">Bath</td><td style="${tCellH}">Room Notes</td></tr>`;
             if (isHouse) {
                 for (let i = 1; i < levelCount; i++) {
                     const ln = gv(`levelName_${i}`), beds = gv(`bedrooms_${i}`), bths = gv(`bathrooms_${i}`), other = gv(`otherRooms_${i}`, 'textarea');
@@ -2347,8 +2400,9 @@
             html += `<tr><td style="${tCellH}">Total</td><td style="${tCellH} text-align: center;">${totalBeds}</td><td style="${tCellH} text-align: center;">${totalBaths}</td><td style="${tCellH}"></td></tr>`;
             html += `</table>`;
             // Laundry/Dryer under level table
-            if (isHouse) {
-                const laundry = gv('laundryLocation', 'radio'), dryer = gv('hasDryer', 'radio');
+            {
+                const laundry = isHouse ? gv('laundryLocation', 'radio') : gv('aptLaundryLocation', 'radio');
+                const dryer = isHouse ? gv('hasDryer', 'radio') : gv('aptHasDryer', 'radio');
                 let ldParts = [];
                 if (has(laundry) && laundry !== 'None') ldParts.push(`Laundry: ${laundry}`);
                 if (dryer === 'Yes') ldParts.push('Dryer: Yes');
@@ -2369,14 +2423,6 @@
                     if (has(notes)) entry += ` — ${notes}`;
                     html += `<div style="${lineS}">${entry}</div>`;
                 }
-            }
-            // Wardrobes
-            const wBI = isChk('wardrobeBuiltIn'), wWI = isChk('wardrobeWalkIn');
-            if (wBI || wWI) {
-                let wp = [];
-                if (wBI) { const n = gv('wardrobeBuiltInNotes', 'textarea'); wp.push(`Built-in${has(n) ? ' — ' + n : ''}`); }
-                if (wWI) { const n = gv('wardrobeWalkInNotes', 'textarea'); wp.push(`Walk-in${has(n) ? ' — ' + n : ''}`); }
-                html += `<div style="${lineS}"><b>Wardrobes:</b> ${wp.join(' &nbsp;|&nbsp; ')}</div>`;
             }
 
             // ── APPLIANCES ──
