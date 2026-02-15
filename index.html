@@ -1,0 +1,2488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Property Inspection Checklist</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f4f4f4;
+            min-height: 100vh;
+            padding: 0;
+            overflow-x: hidden;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+            background: white;
+            border-radius: 0;
+            box-shadow: none;
+            padding: 0;
+            padding-bottom: calc(90px + env(safe-area-inset-bottom));
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Live Summary Card - Sticky */
+        .live-summary {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            color: white;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-bottom: 2px solid #333;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .live-summary-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .live-summary-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #aaa;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .live-summary-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .header {
+            flex-shrink: 0;
+            padding: 12px 15px 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 18px;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .property-type-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+        
+        .property-type-buttons button {
+            padding: 12px 16px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            touch-action: manipulation;
+            transition: all 0.15s ease-out;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        .property-type-buttons button.active {
+            background: #667eea !important;
+            color: white !important;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+        }
+
+        .property-type-buttons button:active {
+            transform: scale(0.95);
+        }
+
+        .form-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 6px;
+            padding-left: 12px;
+            padding-top: 8px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .form-wrapper::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .form-wrapper::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .form-wrapper::-webkit-scrollbar-thumb {
+            background: #000000;
+            border-radius: 2px;
+        }
+        
+        .form-section {
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .form-section h3 {
+            color: #000000;
+            font-size: 13px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-left: 4px solid #000000;
+            padding-left: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .form-group.required label::after {
+            content: ' *';
+            color: #e74c3c;
+        }
+        
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="tel"],
+        .form-group input[type="date"],
+        .form-group input[type="time"],
+        .form-group input[type="number"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            -webkit-appearance: none;
+            appearance: none;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #000000;
+            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-group textarea {
+            min-height: 60px;
+            resize: vertical;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 0 0 calc(50% - 5px);
+            padding: 6px;
+            border-radius: 4px;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .checkbox-item input[type="checkbox"],
+        .radio-item input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            flex-shrink: 0;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .checkbox-item input[type="checkbox"]:checked,
+        .radio-item input[type="radio"]:checked {
+            background: #000000;
+            border-color: #000000;
+        }
+
+        .radio-item input[type="radio"] {
+            border-radius: 50%;
+        }
+        
+        .checkbox-item label,
+        .radio-item label {
+            margin: 0;
+            cursor: pointer;
+            font-size: 13px;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            display: none;
+            text-align: center;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .success-message {
+            background: #4caf50;
+            color: white;
+            display: block;
+        }
+
+        .error-message {
+            background: #e74c3c;
+            color: white;
+            display: block;
+        }
+
+        /* Fixed Footer for Mobile */
+        .button-group {
+            position: fixed;
+            bottom: env(safe-area-inset-bottom);
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 12px 15px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 8px;
+            z-index: 1000;
+        }
+        
+        button {
+            flex: 1;
+            min-width: 80px;
+            padding: 14px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+            transition: all 0.15s ease-out;
+        }
+
+        button:active {
+            transform: scale(0.95);
+            opacity: 0.9;
+        }
+
+        button.submit-btn {
+            background: #000000;
+            color: white;
+        }
+
+        button.submit-btn:active {
+            background: #333333;
+        }
+
+        button.reset-btn {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        button.reset-btn:active {
+            background: #e0e0e0;
+        }
+
+        button.photo-btn {
+            background: #27ae60;
+            color: white;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        button.photo-btn:active {
+            background: #229954;
+        }
+
+        button.add-btn {
+            background: #27ae60;
+            color: white;
+            width: 100%;
+            margin-top: 6px;
+        }
+
+        button.delete-btn {
+            background: #e74c3c;
+            color: white;
+            padding: 8px 12px;
+            font-size: 12px;
+            width: auto;
+        }
+
+        button.delete-btn:active {
+            background: #c0392b;
+        }
+
+        .photo-section {
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .photo-item {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #eee;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .photo-item img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .photo-note {
+            font-size: 12px;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .owner-item {
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            border-left: 3px solid #000000;
+            position: relative;
+        }
+
+        .remove-btn {
+            background: #e74c3c;
+            color: white;
+            padding: 4px 8px;
+            font-size: 11px;
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: auto;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .level-section {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            border-left: 3px solid #000000;
+        }
+
+        .appliance-item {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .appliance-item-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .appliance-item-header input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .appliance-item-header label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 13px;
+            flex: 1;
+        }
+
+        .appliance-item textarea,
+        .appliance-item input[type="text"],
+        .appliance-item select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 480px) {
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+
+            .checkbox-item {
+                flex: 0 0 100%;
+            }
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                border-radius: 0;
+                padding: 15px;
+                height: auto;
+                padding-bottom: 0;
+            }
+            .header {
+                display: none;
+            }
+            .button-group {
+                display: none;
+            }
+        }
+
+        @page {
+            size: A4;
+            margin: 10mm;
+        }
+
+        /* iOS Specific Fixes */
+        input, textarea, select {
+            font-size: 16px; /* Prevents iOS auto-zoom */
+        }
+
+        input[type="checkbox"],
+        input[type="radio"] {
+            font-size: 1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="pdf-content">
+        <!-- LIVE SUMMARY CARD -->
+        <div class="live-summary" id="liveSummary">
+            <div class="live-summary-item">
+                <div class="live-summary-label">Bedrooms</div>
+                <div class="live-summary-value" id="summaryBeds">0</div>
+            </div>
+            <div class="live-summary-item">
+                <div class="live-summary-label">Bathrooms</div>
+                <div class="live-summary-value" id="summaryBaths">0</div>
+            </div>
+            <div class="live-summary-item">
+                <div class="live-summary-label">Car Spaces</div>
+                <div class="live-summary-value" id="summaryCars">0</div>
+            </div>
+            <div class="live-summary-item">
+                <div class="live-summary-label">Photos</div>
+                <div class="live-summary-value" id="summaryPhotos">0</div>
+            </div>
+        </div>
+
+        <div class="header">
+            <h1>📋 Property Checklist</h1>
+            <p class="subtitle">On-site inspection form</p>
+            
+            <div class="property-type-buttons">
+                <button class="active" id="typeHouseBtn" onclick="selectType('house')">🏠 House</button>
+                <button id="typeAptBtn" onclick="selectType('apartment')">🏢 Apt</button>
+            </div>
+        </div>
+
+        <div class="form-wrapper">
+            <div id="errorMsg" class="message error-message"></div>
+            <div id="successMsg" class="message success-message"></div>
+
+            <form id="inspectionForm">
+                <!-- SECTION 1: PROPERTY INFO -->
+                <div class="form-section">
+                    <h3>1. Property</h3>
+                    
+                    <div class="form-group required">
+                        <label>Address</label>
+                        <input type="text" name="address" id="addressInput" required placeholder="Full address" onkeyup="suggestAddress()">
+                        <div id="addressSuggestions" style="margin-top: 4px;"></div>
+                    </div>
+                    
+                    <div class="two-col">
+                        <div class="form-group required">
+                            <label>Date</label>
+                            <input type="date" name="inspectionDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Time</label>
+                            <input type="time" name="inspectionTime">
+                        </div>
+                    </div>
+
+                    <!-- HOUSE FIELDS -->
+                    <div id="house-1">
+                        <div class="two-col">
+                            <div class="form-group">
+                                <label>Land (sqm)</label>
+                                <input type="number" name="landSize" placeholder="e.g., 500">
+                            </div>
+                            <div class="form-group">
+                                <label>Size (sqm)</label>
+                                <input type="number" name="internalSize" placeholder="e.g., 200">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- APARTMENT FIELDS -->
+                    <div id="apt-1" class="hidden">
+                        <div class="two-col">
+                            <div class="form-group required">
+                                <label>SP</label>
+                                <input type="text" name="strataNumber" placeholder="SP 12345">
+                            </div>
+                            <div class="form-group required">
+                                <label>Lot</label>
+                                <input type="text" name="lotNumber" placeholder="Lot 42">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Size (sqm)</label>
+                            <input type="number" name="internalSize" placeholder="e.g., 120">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Layout</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" name="aptLayout" value="Single Level" checked onchange="updateAptLayout()">
+                                    <label>Single Level</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" name="aptLayout" value="Split Level" onchange="updateAptLayout()">
+                                    <label>Split Level</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Separate Water Metering</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" name="separateWater" value="Yes">
+                                    <label>Yes</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" name="separateWater" value="No" checked>
+                                    <label>No</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 2: OWNER -->
+                <div class="form-section">
+                    <h3>2. Owner</h3>
+                    
+                    <div id="ownersContainer">
+                        <div class="owner-item">
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input type="text" name="ownerName_0" placeholder="Full name">
+                            </div>
+                            <div class="form-group">
+                                <label>Email (optional)</label>
+                                <input type="email" name="ownerEmail_0" placeholder="owner@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Mobile (optional)</label>
+                                <input type="tel" name="ownerMobile_0" placeholder="0412 345 678">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="button" class="add-btn" onclick="addOwner()">+ Add Owner</button>
+                </div>
+
+                <!-- SECTION 3: RENTAL -->
+                <div class="form-section">
+                    <h3>3. Rental</h3>
+                    
+                    <div class="two-col">
+                        <div class="form-group required">
+                            <label>Weekly Rent ($)</label>
+                            <input type="number" name="proposedRent" required placeholder="e.g., 550">
+                        </div>
+                        <div class="form-group">
+                            <label>Lease Term</label>
+                            <input type="text" name="leaseTerm" placeholder="12 months">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Rental Estimation Notes</label>
+                        <textarea name="rentalNotes" placeholder="Reasoning for estimation, market comparison notes..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Occupancy</label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" name="occupancy" value="Vacant" checked onchange="updateOccupancy()">
+                                <label>Vacant</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" name="occupancy" value="Tenanted" onchange="updateOccupancy()">
+                                <label>Tenanted</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" name="occupancy" value="Owner-Occupied" onchange="updateOccupancy()">
+                                <label>Owner-Occupied</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="managedSection" class="hidden">
+                        <div class="form-group">
+                            <label>Managed By</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" name="managedBy" value="Owner">
+                                    <label>Owner</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" name="managedBy" value="Agent">
+                                    <label>Agent</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="two-col">
+                            <div class="form-group">
+                                <label>Lease Expiry</label>
+                                <input type="date" name="leaseExpiry">
+                            </div>
+                            <div class="form-group">
+                                <label>Vacating Date</label>
+                                <input type="date" name="vacatingDate">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Vacated Timeline / Notes</label>
+                            <input type="text" name="vacatedTimeline" placeholder="e.g. 4 weeks notice required">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 4: FEATURES -->
+                <div class="form-section">
+                    <h3>4. Features</h3>
+
+                    <!-- HOUSE FEATURES -->
+                    <div id="house-features">
+                        <div class="form-group">
+                            <label>Furnished</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" name="furnished" value="No" checked>
+                                    <label>No</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" name="furnished" value="Yes">
+                                    <label>Yes</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Pets</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" name="petsAllowed" value="No" checked>
+                                    <label>No</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" name="petsAllowed" value="Yes">
+                                    <label>Yes</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- APARTMENT FEATURES -->
+                    <div id="apt-features" class="hidden">
+                        <div class="form-group">
+                            <label>Floor Level</label>
+                            <input type="text" name="floorLevel" placeholder="e.g., 5">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Lift Access</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" name="liftAccess" value="Yes">
+                                    <label>Yes</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" name="liftAccess" value="No" checked>
+                                    <label>No</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Balcony</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" name="hasBalcony" value="Yes" onchange="updateBalconyNotes()">
+                                    <label>Yes</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" name="hasBalcony" value="No" checked onchange="updateBalconyNotes()">
+                                    <label>No</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="balconyNotes" class="hidden form-group">
+                            <label>Balcony Notes</label>
+                            <textarea name="balconyNotes" placeholder="e.g., L-shaped, good size, north facing"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Embedded Network</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" name="embeddedNetwork" value="Yes" onchange="updateEmbeddedNetwork()">
+                                    <label>Yes</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" name="embeddedNetwork" value="No" checked onchange="updateEmbeddedNetwork()">
+                                    <label>No</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="embeddedNetworkFields" class="hidden" style="background: #f9f9f9; padding: 10px; border-radius: 6px; margin-top: 8px;">
+                            <div class="form-group">
+                                <label>Gas</label>
+                                <div class="radio-group">
+                                    <div class="radio-item">
+                                        <input type="radio" name="embeddedGas" value="Yes" onchange="updateEmbeddedGas()">
+                                        <label>Yes</label>
+                                    </div>
+                                    <div class="radio-item">
+                                        <input type="radio" name="embeddedGas" value="No" checked onchange="updateEmbeddedGas()">
+                                        <label>No</label>
+                                    </div>
+                                </div>
+                                <div id="embeddedGasNotes" class="hidden form-group" style="margin-top: 8px;">
+                                    <input type="text" name="embeddedGasProvider" placeholder="Service provider">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Electricity</label>
+                                <div class="radio-group">
+                                    <div class="radio-item">
+                                        <input type="radio" name="embeddedElec" value="Yes" onchange="updateEmbeddedElec()">
+                                        <label>Yes</label>
+                                    </div>
+                                    <div class="radio-item">
+                                        <input type="radio" name="embeddedElec" value="No" checked onchange="updateEmbeddedElec()">
+                                        <label>No</label>
+                                    </div>
+                                </div>
+                                <div id="embeddedElecNotes" class="hidden form-group" style="margin-top: 8px;">
+                                    <input type="text" name="embeddedElecProvider" placeholder="Service provider">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Internet</label>
+                                <div class="radio-group">
+                                    <div class="radio-item">
+                                        <input type="radio" name="embeddedInternet" value="Yes" onchange="updateEmbeddedInternet()">
+                                        <label>Yes</label>
+                                    </div>
+                                    <div class="radio-item">
+                                        <input type="radio" name="embeddedInternet" value="No" checked onchange="updateEmbeddedInternet()">
+                                        <label>No</label>
+                                    </div>
+                                </div>
+                                <div id="embeddedInternetNotes" class="hidden form-group" style="margin-top: 8px;">
+                                    <input type="text" name="embeddedInternetProvider" placeholder="Service provider (e.g., NBN, Starry)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Building Facilities</label>
+                            <textarea name="buildingFacilities" placeholder="e.g., Pool, Gym, BBQ area, Communal garden"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Furnished</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" name="furnishedApt" value="No" checked>
+                                    <label>No</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" name="furnishedApt" value="Yes">
+                                    <label>Yes</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Pets</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" name="petsAllowedApt" value="No" checked>
+                                    <label>No</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" name="petsAllowedApt" value="Yes">
+                                    <label>Yes</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 5: ACCOMMODATION -->
+                <div class="form-section">
+                    <h3>5. Accommodation</h3>
+                    
+                    <!-- HOUSE: MULTI-LEVEL -->
+                    <div id="house-accommodation">
+                        <div id="accommodationLevels"></div>
+                        <button type="button" class="add-btn" onclick="addLevel()">+ Add Level</button>
+
+                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #eee;">
+                            <div class="form-group">
+                                <label>Laundry Room</label>
+                                <div class="radio-group">
+                                    <div class="radio-item">
+                                        <input type="radio" name="laundryLocation" value="Internal">
+                                        <label>Internal</label>
+                                    </div>
+                                    <div class="radio-item">
+                                        <input type="radio" name="laundryLocation" value="External">
+                                        <label>External</label>
+                                    </div>
+                                    <div class="radio-item">
+                                        <input type="radio" name="laundryLocation" value="None" checked>
+                                        <label>None</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Dryer Included</label>
+                                <div class="radio-group">
+                                    <div class="radio-item">
+                                        <input type="radio" name="hasDryer" value="Yes">
+                                        <label>Yes</label>
+                                    </div>
+                                    <div class="radio-item">
+                                        <input type="radio" name="hasDryer" value="No" checked>
+                                        <label>No</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #eee;">
+                            <div class="form-group">
+                                <label>Car Space Type (Select all that apply)</label>
+                                <div class="checkbox-group">
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" name="carspaceType_Garage" value="Garage" onchange="updateCarspaceTypeFields()">
+                                        <label>Garage</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" name="carspaceType_Carport" value="Carport" onchange="updateCarspaceTypeFields()">
+                                        <label>Carport</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" name="carspaceType_Street" value="Street Parking" onchange="updateCarspaceTypeFields()">
+                                        <label>Street Parking</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="carspaceGarageFields" class="hidden">
+                                <div class="form-group">
+                                    <label>Garage - Number of Cars</label>
+                                    <input type="number" name="garageSpaces" min="0" placeholder="0" onchange="updateLiveSummary()">
+                                </div>
+                                <div class="form-group">
+                                    <label>Garage - Location/Notes</label>
+                                    <input type="text" name="garageNotes" placeholder="e.g., attached, detached, enclosed">
+                                </div>
+                            </div>
+
+                            <div id="carspaceCarportFields" class="hidden">
+                                <div class="form-group">
+                                    <label>Carport - Number of Cars</label>
+                                    <input type="number" name="carportSpaces" min="0" placeholder="0" onchange="updateLiveSummary()">
+                                </div>
+                                <div class="form-group">
+                                    <label>Carport - Location/Notes</label>
+                                    <input type="text" name="carportNotes" placeholder="e.g., front, side, rear">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- APARTMENT: SIMPLE -->
+                    <div id="apt-accommodation" class="hidden">
+                        <div id="aptSingleLevel">
+                            <div class="two-col">
+                                <div class="form-group">
+                                    <label>Bedrooms</label>
+                                    <input type="number" name="bedroomsApt" min="0" placeholder="e.g., 2" onchange="updateLiveSummary()">
+                                </div>
+                                <div class="form-group">
+                                    <label>Bathrooms</label>
+                                    <input type="number" name="bathroomsApt" min="0" placeholder="e.g., 1" onchange="updateLiveSummary()">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Other Rooms (Study, Powder Room, etc.)</label>
+                                <textarea name="otherRoomsApt" placeholder="List any other rooms"></textarea>
+                            </div>
+                        </div>
+
+                        <div id="aptSplitLevelContainer" class="hidden">
+                            <div id="aptSplitLevels"></div>
+                            <button type="button" class="add-btn" onclick="addAptLevel()" style="margin-top: 12px;">+ Add Level</button>
+                        </div>
+
+                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #eee;">
+                            <div class="form-group">
+                                <label>Car Space Type</label>
+                                <div class="radio-group">
+                                    <div class="radio-item">
+                                        <input type="radio" name="aptCarspaceType" value="Lockup Garage" onchange="updateAptCarspaceFields()">
+                                        <label>Lockup Garage</label>
+                                    </div>
+                                    <div class="radio-item">
+                                        <input type="radio" name="aptCarspaceType" value="Open Space" onchange="updateAptCarspaceFields()">
+                                        <label>Open Space</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Number of Car Spaces</label>
+                                <input type="number" name="aptCarspaceCount" min="0" placeholder="0" onchange="updateLiveSummary()">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Car Space Number</label>
+                                <input type="text" name="aptCarspaceNumber" placeholder="e.g., S1, S2, G5">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Car Space Level</label>
+                                <input type="text" name="aptCarspaceLevel" placeholder="e.g., Level 1B, Basement 2">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Storage</label>
+                                <div class="radio-group">
+                                    <div class="radio-item">
+                                        <input type="radio" name="hasStorage" value="Yes" onchange="updateStorageFields()">
+                                        <label>Yes</label>
+                                    </div>
+                                    <div class="radio-item">
+                                        <input type="radio" name="hasStorage" value="No" checked onchange="updateStorageFields()">
+                                        <label>No</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="storageFields" class="hidden">
+                                <div class="form-group">
+                                    <label>Storage Number</label>
+                                    <input type="text" name="storageNumber" placeholder="e.g., ST1, ST2">
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Storage Level</label>
+                                    <input type="text" name="storageLevel" placeholder="e.g., Level 2, Basement">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 6: FLOORING -->
+                <div class="form-section">
+                    <h3>6. Flooring</h3>
+                    
+                    <div id="flooringContainer"></div>
+                    <button type="button" class="add-btn" onclick="addFlooringArea()">+ Add Area</button>
+                </div>
+
+                <!-- SECTION 7: APPLIANCES -->
+                <div class="form-section">
+                    <h3>7. Appliances</h3>
+                    
+                    <div class="form-group">
+                        <label>Add Custom Appliance</label>
+                        <button type="button" class="add-btn" onclick="addCustomAppliance()" style="margin-top: 8px;">+ Add Appliance</button>
+                    </div>
+                    
+                    <div id="appliancesContainer"></div>
+                </div>
+
+                <!-- SECTION 8: WARDROBE -->
+                <div class="form-section">
+                    <h3>8. Wardrobe</h3>
+                    
+                    <div class="form-group">
+                        <label>Type (Select all that apply)</label>
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="wardrobeBuiltIn" onchange="updateWardrobeNotes()">
+                                <label>Built-in</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="wardrobeWalkIn" onchange="updateWardrobeNotes()">
+                                <label>Walk-in</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="wardrobeBuiltInNotes" class="hidden form-group">
+                        <label>Built-in Wardrobe Notes</label>
+                        <textarea name="wardrobeBuiltInNotes" placeholder="Area, size, condition..."></textarea>
+                    </div>
+
+                    <div id="wardrobeWalkInNotes" class="hidden form-group">
+                        <label>Walk-in Wardrobe Notes</label>
+                        <textarea name="wardrobeWalkInNotes" placeholder="Area, size, condition..."></textarea>
+                    </div>
+                </div>
+
+                <!-- SECTION 9: SECURITY -->
+                <div class="form-section">
+                    <h3>9. Security</h3>
+                    
+                    <div class="form-group">
+                        <label>Alarm System</label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" name="hasAlarm" value="Yes" onchange="updateAlarmCode()">
+                                <label>Yes</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" name="hasAlarm" value="No" checked onchange="updateAlarmCode()">
+                                <label>No</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="alarmCodeSection" class="hidden form-group">
+                        <label>Alarm Code & Notes</label>
+                        <textarea name="alarmCode" placeholder="Code and any relevant notes..."></textarea>
+                    </div>
+                </div>
+
+                <!-- SECTION 10: CONDITION -->
+                <div class="form-section">
+                    <h3>10. Condition</h3>
+                    
+                    <div class="form-group required">
+                        <label>Overall</label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" name="condition" value="Excellent" required>
+                                <label>Excellent</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" name="condition" value="Good" checked>
+                                <label>Good</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" name="condition" value="Fair">
+                                <label>Fair</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" name="condition" value="Poor">
+                                <label>Poor</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Issues / Defects</label>
+                        <textarea name="defects" placeholder="List any issues..."></textarea>
+                    </div>
+                </div>
+
+                <!-- SECTION 11: ONGOING MAINTENANCE (HOUSE ONLY) -->
+                <div class="form-section" id="maintenanceSection">
+                    <h3>11. Ongoing Maintenance</h3>
+                    
+                    <div class="form-group">
+                        <label>🏊 Pool</label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" name="hasPool" value="Yes" onchange="updatePoolFields()">
+                                <label>Yes</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" name="hasPool" value="No" checked onchange="updatePoolFields()">
+                                <label>No</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="poolDetails" class="hidden">
+                        <div class="form-group">
+                            <label>Pool Compliance Certificate</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" name="poolCertificate" value="Yes" onchange="updatePoolCertDate()">
+                                    <label>Yes</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" name="poolCertificate" value="No" checked onchange="updatePoolCertDate()">
+                                    <label>No</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="poolCertDate" class="hidden form-group">
+                            <label>Certificate Expiry Date</label>
+                            <input type="date" name="poolCertExpiry">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Pool Maintenance</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" name="poolMaintenance" value="Owner" onchange="updatePoolFrequency()">
+                                    <label>Owner</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" name="poolMaintenance" value="Tenant" onchange="updatePoolFrequency()">
+                                    <label>Tenant</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="poolFrequencyField" class="hidden form-group">
+                            <label>Maintenance Frequency</label>
+                            <input type="text" name="poolFrequency" placeholder="e.g., Weekly, Fortnightly, Monthly">
+                        </div>
+
+                        <div id="poolChemicalField" class="hidden form-group">
+                            <label>Chemical Costs Responsibility</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" name="chemicalCosts" value="Owner">
+                                    <label>Owner</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" name="chemicalCosts" value="Tenant">
+                                    <label>Tenant</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>🌿 Lawn</label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" name="lawnMaintenance" value="Owner" onchange="updateGardenNotes()">
+                                <label>Owner</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" name="lawnMaintenance" value="Tenant" onchange="updateGardenNotes()">
+                                <label>Tenant</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="lawnNotesField" class="hidden form-group">
+                        <label>Lawn Notes (frequency, other info)</label>
+                        <textarea name="lawnNotes" placeholder="e.g., Weekly mowing, watering requirements"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>🌳 Other Garden (Hedging, Plants, etc.)</label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" name="gardenMaintenance" value="Owner" onchange="updateGardenNotes()">
+                                <label>Owner</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" name="gardenMaintenance" value="Tenant" onchange="updateGardenNotes()">
+                                <label>Tenant</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="gardenNotesField" class="hidden form-group">
+                        <label>Garden Notes (frequency, other info)</label>
+                        <textarea name="gardenNotes" placeholder="e.g., Trim hedges quarterly, prune shrubs seasonally"></textarea>
+                    </div>
+                </div>
+
+                <!-- SECTION 12: PROPERTY TIMELINE -->
+                <div class="form-section">
+                    <h3>12. Property Timeline</h3>
+
+                    <div class="two-col">
+                        <div class="form-group">
+                            <label>Available Date</label>
+                            <input type="date" name="availableDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Move-out Date</label>
+                            <input type="date" name="moveOutDate">
+                        </div>
+                    </div>
+                    <div class="two-col">
+                        <div class="form-group">
+                            <label>Clean Date</label>
+                            <input type="date" name="cleanDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Photography Date</label>
+                            <input type="date" name="photographyDate">
+                        </div>
+                    </div>
+                    <div class="two-col">
+                        <div class="form-group">
+                            <label>Listing Date</label>
+                            <input type="date" name="listingDate">
+                        </div>
+                        <div class="form-group">
+                            <label>1st Open Date</label>
+                            <input type="date" name="firstOpenDate">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 13: PHOTOS -->
+                <div class="form-section">
+                    <h3>13. Photos & Key Records</h3>
+                    
+                    <p style="font-size: 11px; color: #666; margin-bottom: 8px;">Capture property photos and key/lock records. E.g., front door lock, building key, unit lock, meter location.</p>
+                    
+                    <button type="button" class="photo-btn" onclick="triggerCamera()">📷 Take Photo</button>
+                    <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;" onchange="handlePhoto(event)">
+                    
+                    <div id="photosContainer" class="photo-section hidden"></div>
+                </div>
+
+                <!-- SECTION 14: GENERAL NOTES -->
+                <div class="form-section">
+                    <h3>14. General Notes</h3>
+                    
+                    <div class="form-group">
+                        <label>Additional Observations</label>
+                        <textarea name="notes" placeholder="Add observations, recommendations..."></textarea>
+                    </div>
+                </div>
+
+                <!-- SPACER FOR FIXED FOOTER -->
+                <div style="height: 20px;"></div>
+            </form>
+        </div>
+
+        <!-- FIXED FOOTER BUTTONS -->
+        <div class="button-group">
+            <button type="button" class="reset-btn" onclick="clearForm()">Clear</button>
+            <button type="button" class="submit-btn" onclick="downloadPDF()">📄 PDF</button>
+        </div>
+    </div>
+
+    <script>
+        let currentType = 'house';
+        let photos = [];
+        let ownerCount = 1;
+        let levelCount = 1;
+        let flooringCount = 1;
+        let customApplianceCount = 0;
+        let aptLevelCount = 1;
+
+        const defaultAppliances = ['Air Con', 'Oven', 'Cooktop', 'Dishwasher', 'Rangehood', 'Dryer'];
+
+        // Initialize form
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.querySelector('input[name="inspectionDate"]').value = today;
+            
+            initializeLevels();
+            initializeFlooring();
+            initializeAppliances();
+            
+            // Load saved data if exists
+            loadSession();
+
+            // Set up auto-save on any input/change event
+            document.getElementById('inspectionForm').addEventListener('change', debounce(() => {
+                saveSession();
+                updateLiveSummary();
+            }, 500));
+            document.getElementById('inspectionForm').addEventListener('input', debounce(() => {
+                updateLiveSummary();
+            }, 300));
+            
+            // Initial update
+            updateLiveSummary();
+            
+            // Check if html2pdf library is loaded
+            if (typeof html2pdf === 'undefined') {
+                console.warn('html2pdf library not loaded. PDF export may not work.');
+            }
+        });
+
+        // SESSION MANAGEMENT
+        function saveSession() {
+            try {
+                const form = document.getElementById('inspectionForm');
+                const sessionState = {
+                    currentType: currentType,
+                    ownerCount: ownerCount,
+                    levelCount: levelCount,
+                    flooringCount: flooringCount,
+                    customApplianceCount: customApplianceCount,
+                    aptLevelCount: aptLevelCount,
+                    photos: photos.map(p => ({
+                        data: p.data,
+                        note: p.note
+                    })),
+                    timestamp: new Date().getTime(),
+                    formValues: {}
+                };
+
+                // Serialize all form fields
+                const formData = new FormData(form);
+                for (let [key, value] of formData.entries()) {
+                    if (!sessionState.formValues[key]) {
+                        sessionState.formValues[key] = value;
+                    } else if (Array.isArray(sessionState.formValues[key])) {
+                        sessionState.formValues[key].push(value);
+                    } else {
+                        sessionState.formValues[key] = [sessionState.formValues[key], value];
+                    }
+                }
+                
+                localStorage.setItem('property_checklist_draft', JSON.stringify(sessionState));
+            } catch (e) {
+                console.error('Session save error', e);
+            }
+        }
+
+        function loadSession() {
+            const saved = localStorage.getItem('property_checklist_draft');
+            if (!saved) return;
+            
+            try {
+                const state = JSON.parse(saved);
+                
+                // Confirm restoration if older than 1 hour
+                const ageMinutes = (new Date().getTime() - state.timestamp) / 60000;
+                if (ageMinutes > 60) {
+                    if (!confirm(`Found a saved draft from ${new Date(state.timestamp).toLocaleTimeString()}. Restore?`)) {
+                        return;
+                    }
+                }
+
+                // Restore property type
+                currentType = state.currentType || 'house';
+                selectType(currentType);
+                
+                // Restore photos
+                if (state.photos && Array.isArray(state.photos)) {
+                    photos = state.photos;
+                    displayPhotos();
+                }
+
+                // Restore counters for dynamic elements
+                ownerCount = state.ownerCount || 1;
+                levelCount = state.levelCount || 1;
+                flooringCount = state.flooringCount || 1;
+                customApplianceCount = state.customApplianceCount || 0;
+                aptLevelCount = state.aptLevelCount || 1;
+
+                // Populate form fields
+                const form = document.getElementById('inspectionForm');
+                if (state.formValues) {
+                    for (const [key, value] of Object.entries(state.formValues)) {
+                        const field = form.elements[key];
+                        if (field) {
+                            if (field.type === 'radio') {
+                                const radio = form.querySelector(`input[name="${key}"][value="${value}"]`);
+                                if (radio) radio.checked = true;
+                            } else if (field.type === 'checkbox') {
+                                if (Array.isArray(value)) {
+                                    value.forEach(v => {
+                                        const cb = form.querySelector(`input[name="${key}"][value="${v}"]`);
+                                        if (cb) cb.checked = true;
+                                    });
+                                } else {
+                                    field.checked = true;
+                                }
+                            } else {
+                                field.value = value;
+                            }
+                        }
+                    }
+                }
+                
+                // Trigger visibility updates
+                updateOccupancy();
+                updateAptLayout();
+                updateEmbeddedNetwork();
+                updateAlarmCode();
+                updateWardrobeNotes();
+                updateBalconyNotes();
+                updatePoolFields();
+                updateGardenNotes();
+                updateCarspaceTypeFields();
+                updateAptCarspaceFields();
+
+                showMsg('success', 'Draft restored!');
+            } catch (e) {
+                console.error('Session load error', e);
+            }
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        // Property type selection
+        function selectType(type) {
+            currentType = type;
+            
+            const houseBtn = document.getElementById('typeHouseBtn');
+            const aptBtn = document.getElementById('typeAptBtn');
+            
+            houseBtn.classList.toggle('active', type === 'house');
+            aptBtn.classList.toggle('active', type === 'apartment');
+            
+            if (type === 'house') {
+                document.getElementById('house-1').classList.remove('hidden');
+                document.getElementById('apt-1').classList.add('hidden');
+                document.getElementById('house-features').classList.remove('hidden');
+                document.getElementById('apt-features').classList.add('hidden');
+                document.getElementById('house-accommodation').classList.remove('hidden');
+                document.getElementById('apt-accommodation').classList.add('hidden');
+                document.getElementById('maintenanceSection').classList.remove('hidden');
+            } else {
+                document.getElementById('house-1').classList.add('hidden');
+                document.getElementById('apt-1').classList.remove('hidden');
+                document.getElementById('house-features').classList.add('hidden');
+                document.getElementById('apt-features').classList.remove('hidden');
+                document.getElementById('house-accommodation').classList.add('hidden');
+                document.getElementById('apt-accommodation').classList.remove('hidden');
+                document.getElementById('maintenanceSection').classList.add('hidden');
+                document.getElementById('embeddedNetworkFields').classList.add('hidden');
+            }
+            saveSession();
+        }
+
+        // Occupancy logic
+        function updateOccupancy() {
+            const occupancy = document.querySelector('input[name="occupancy"]:checked')?.value;
+            const section = document.getElementById('managedSection');
+            section.classList.toggle('hidden', occupancy !== 'Tenanted');
+        }
+
+        // Add owner
+        function addOwner() {
+            const container = document.getElementById('ownersContainer');
+            const div = document.createElement('div');
+            div.className = 'owner-item';
+            div.innerHTML = `
+                <button type="button" class="remove-btn" onclick="removeOwner(this)">✕</button>
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" name="ownerName_${ownerCount}" placeholder="Full name">
+                </div>
+                <div class="form-group">
+                    <label>Email (optional)</label>
+                    <input type="email" name="ownerEmail_${ownerCount}" placeholder="owner@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Mobile (optional)</label>
+                    <input type="tel" name="ownerMobile_${ownerCount}" placeholder="0412 345 678">
+                </div>
+            `;
+            container.appendChild(div);
+            ownerCount++;
+            saveSession();
+        }
+
+        function removeOwner(btn) {
+            btn.parentElement.remove();
+            saveSession();
+        }
+
+        // ACCOMMODATION: Multi-level for houses
+        function initializeLevels() {
+            addLevel();
+        }
+
+        function addLevel() {
+            const container = document.getElementById('accommodationLevels');
+            const div = document.createElement('div');
+            div.className = 'level-section';
+            const levelNum = levelCount;
+            div.innerHTML = `
+                <div>
+                    <input type="text" name="levelName_${levelNum}" placeholder="Level name (e.g., Upper, Lower, Ground)" value="Level ${levelNum}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 8px; font-weight: 600; font-size: 14px;">
+                </div>
+                <div class="two-col">
+                    <div class="form-group">
+                        <label>Bedrooms</label>
+                        <input type="number" name="bedrooms_${levelNum}" min="0" placeholder="0" onchange="updateLiveSummary()">
+                    </div>
+                    <div class="form-group">
+                        <label>Bathrooms</label>
+                        <input type="number" name="bathrooms_${levelNum}" min="0" placeholder="0" onchange="updateLiveSummary()">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Other Rooms (Laundry, Study, etc.)</label>
+                    <textarea name="otherRooms_${levelNum}" placeholder="List other rooms on this level"></textarea>
+                </div>
+                ${levelNum > 1 ? `<button type="button" class="delete-btn" onclick="removeLevel(this)" style="width: 100%; margin-top: 8px;">Remove Level</button>` : ''}
+            `;
+            container.appendChild(div);
+            levelCount++;
+        }
+
+        function removeLevel(btn) {
+            btn.parentElement.remove();
+            saveSession();
+            updateLiveSummary();
+        }
+
+        // FLOORING
+        function initializeFlooring() {
+            addFlooringArea();
+        }
+
+        function addFlooringArea() {
+            const container = document.getElementById('flooringContainer');
+            const div = document.createElement('div');
+            div.className = 'appliance-item';
+            const areaNum = flooringCount;
+            div.innerHTML = `
+                <div class="form-group">
+                    <label>Area Name</label>
+                    <input type="text" name="flooring_area_${areaNum}" placeholder="e.g., Kitchen, Bedroom 1, Living Room">
+                </div>
+                <div class="two-col">
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select name="flooring_type_${areaNum}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 6px; font-size: 14px;">
+                            <option value="">Select type...</option>
+                            <option value="Timber">Timber</option>
+                            <option value="Floorboards">Floorboards</option>
+                            <option value="Tiles">Tiles</option>
+                            <option value="Carpet">Carpet</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Size (sqm)</label>
+                        <input type="number" name="flooring_size_${areaNum}" placeholder="e.g., 25" step="0.5">
+                    </div>
+                </div>
+                <div id="flooring_other_${areaNum}" class="hidden form-group">
+                    <label>Other Type - Please Specify</label>
+                    <input type="text" name="flooring_other_type_${areaNum}" placeholder="e.g., Vinyl, Laminate, Polished concrete">
+                </div>
+                <div class="form-group">
+                    <label>Condition & Notes</label>
+                    <textarea name="flooring_notes_${areaNum}" placeholder="Condition, wear, quality, special features..."></textarea>
+                </div>
+                ${areaNum > 1 ? `<button type="button" class="delete-btn" onclick="removeFlooring(this)" style="width: 100%;">Remove Area</button>` : ''}
+            `;
+            container.appendChild(div);
+            
+            // Add change event to flooring type select
+            const select = container.querySelector(`select[name="flooring_type_${areaNum}"]`);
+            select.addEventListener('change', function() {
+                const otherField = document.getElementById(`flooring_other_${areaNum}`);
+                otherField.classList.toggle('hidden', this.value !== 'Other');
+            });
+            
+            flooringCount++;
+        }
+
+        function removeFlooring(btn) {
+            btn.parentElement.remove();
+            saveSession();
+        }
+
+        // APPLIANCES
+        function initializeAppliances() {
+            const container = document.getElementById('appliancesContainer');
+            defaultAppliances.forEach((app, idx) => {
+                const div = document.createElement('div');
+                div.className = 'appliance-item';
+                div.innerHTML = `
+                    <div class="appliance-item-header">
+                        <input type="checkbox" name="appliance_${idx}" value="${app}" onchange="toggleApplianceNotes(this)">
+                        <label>${app}</label>
+                    </div>
+                    <div style="display: none; margin-top: 8px;" class="appliance-notes-${idx}">
+                        ${app === 'Cooktop' ? `
+                            <div class="form-group">
+                                <label>Cooktop Type</label>
+                                <select name="cooktop_type_${idx}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 6px; font-size: 14px;">
+                                    <option value="">Select type...</option>
+                                    <option value="Gas">Gas</option>
+                                    <option value="Electric">Electric</option>
+                                    <option value="Induction">Induction</option>
+                                </select>
+                            </div>
+                        ` : ''}
+                        <input type="text" name="appliance_brand_${idx}" placeholder="Brand/Model (if present)" style="display: block; margin-bottom: 6px;">
+                        <textarea name="appliance_notes_${idx}" placeholder="Quality, condition, age"></textarea>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function toggleApplianceNotes(checkbox) {
+            const idx = checkbox.name.split('_')[1];
+            const notesSection = document.querySelector(`.appliance-notes-${idx}`);
+            if (checkbox.checked) {
+                notesSection.style.display = 'block';
+            } else {
+                notesSection.style.display = 'none';
+            }
+            saveSession();
+        }
+
+        function addCustomAppliance() {
+            const container = document.getElementById('appliancesContainer');
+            const div = document.createElement('div');
+            div.className = 'appliance-item';
+            const idx = 'custom_' + customApplianceCount;
+            div.innerHTML = `
+                <div class="appliance-item-header">
+                    <input type="checkbox" name="appliance_${idx}" value="Custom" onchange="toggleApplianceNotes(this)" checked>
+                    <input type="text" name="appliance_name_${idx}" placeholder="Appliance name" style="margin-left: 8px; flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    <button type="button" class="delete-btn" onclick="removeCustomAppliance(this)" style="margin-left: 6px;">✕</button>
+                </div>
+                <div style="display: block; margin-top: 8px;" class="appliance-notes-${idx}">
+                    <input type="text" name="appliance_brand_${idx}" placeholder="Brand/Model" style="display: block; margin-bottom: 6px;">
+                    <textarea name="appliance_notes_${idx}" placeholder="Quality, condition, age"></textarea>
+                </div>
+            `;
+            container.appendChild(div);
+            customApplianceCount++;
+            saveSession();
+        }
+
+        function removeCustomAppliance(btn) {
+            btn.parentElement.parentElement.remove();
+            saveSession();
+        }
+
+        // WARDROBE
+        function updateWardrobeNotes() {
+            const builtIn = document.querySelector('input[name="wardrobeBuiltIn"]')?.checked;
+            const walkIn = document.querySelector('input[name="wardrobeWalkIn"]')?.checked;
+            document.getElementById('wardrobeBuiltInNotes').classList.toggle('hidden', !builtIn);
+            document.getElementById('wardrobeWalkInNotes').classList.toggle('hidden', !walkIn);
+        }
+
+        // ALARM
+        function updateAlarmCode() {
+            const hasAlarm = document.querySelector('input[name="hasAlarm"]:checked')?.value;
+            const section = document.getElementById('alarmCodeSection');
+            section.classList.toggle('hidden', hasAlarm !== 'Yes');
+        }
+
+        // BALCONY
+        function updateBalconyNotes() {
+            const hasBalcony = document.querySelector('input[name="hasBalcony"]:checked')?.value;
+            const section = document.getElementById('balconyNotes');
+            section.classList.toggle('hidden', hasBalcony !== 'Yes');
+        }
+
+        // EMBEDDED NETWORK
+        function updateEmbeddedNetwork() {
+            const has = document.querySelector('input[name="embeddedNetwork"]:checked')?.value;
+            document.getElementById('embeddedNetworkFields').classList.toggle('hidden', has !== 'Yes');
+        }
+
+        function updateEmbeddedGas() {
+            const has = document.querySelector('input[name="embeddedGas"]:checked')?.value;
+            document.getElementById('embeddedGasNotes').classList.toggle('hidden', has !== 'Yes');
+        }
+
+        function updateEmbeddedElec() {
+            const has = document.querySelector('input[name="embeddedElec"]:checked')?.value;
+            document.getElementById('embeddedElecNotes').classList.toggle('hidden', has !== 'Yes');
+        }
+
+        function updateEmbeddedInternet() {
+            const has = document.querySelector('input[name="embeddedInternet"]:checked')?.value;
+            document.getElementById('embeddedInternetNotes').classList.toggle('hidden', has !== 'Yes');
+        }
+
+        // CAR SPACE
+        function updateCarspaceTypeFields() {
+            const hasGarage = document.querySelector('input[name="carspaceType_Garage"]')?.checked;
+            const hasCarport = document.querySelector('input[name="carspaceType_Carport"]')?.checked;
+            document.getElementById('carspaceGarageFields').classList.toggle('hidden', !hasGarage);
+            document.getElementById('carspaceCarportFields').classList.toggle('hidden', !hasCarport);
+            updateLiveSummary();
+        }
+
+        function updateAptCarspaceFields() {
+            // Apartment carspace is handled by radio selection
+        }
+
+        // STORAGE
+        function updateStorageFields() {
+            const has = document.querySelector('input[name="hasStorage"]:checked')?.value;
+            document.getElementById('storageFields').classList.toggle('hidden', has !== 'Yes');
+        }
+
+        // POOL
+        function updatePoolFields() {
+            const has = document.querySelector('input[name="hasPool"]:checked')?.value;
+            document.getElementById('poolDetails').classList.toggle('hidden', has !== 'Yes');
+        }
+
+        function updatePoolCertDate() {
+            const has = document.querySelector('input[name="poolCertificate"]:checked')?.value;
+            document.getElementById('poolCertDate').classList.toggle('hidden', has !== 'Yes');
+        }
+
+        function updatePoolFrequency() {
+            const maint = document.querySelector('input[name="poolMaintenance"]:checked')?.value;
+            document.getElementById('poolFrequencyField').classList.toggle('hidden', maint !== 'Owner');
+            document.getElementById('poolChemicalField').classList.toggle('hidden', maint !== 'Owner');
+        }
+
+        // Photo handling
+        function triggerCamera() {
+            document.getElementById('cameraInput').click();
+        }
+
+        function handlePhoto(event) {
+            const file = event.target.files?.[0];
+            if (!file) return;
+
+            const originalSizeKB = (file.size / 1024).toFixed(1);
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let w = img.width, h = img.height;
+                    
+                    // Fixed resolution: 640x853 (Portrait orientation)
+                    const targetWidth = 640;
+                    const targetHeight = 853;
+                    
+                    canvas.width = targetWidth;
+                    canvas.height = targetHeight;
+                    
+                    // Center-crop and scale to fill the specific 640x853 area
+                    const imgRatio = w / h;
+                    const targetRatio = targetWidth / targetHeight;
+                    
+                    let sourceX, sourceY, sourceWidth, sourceHeight;
+                    
+                    if (imgRatio > targetRatio) {
+                        // Image is wider than target
+                        sourceHeight = h;
+                        sourceWidth = h * targetRatio;
+                        sourceX = (w - sourceWidth) / 2;
+                        sourceY = 0;
+                    } else {
+                        // Image is taller than target
+                        sourceWidth = w;
+                        sourceHeight = w / targetRatio;
+                        sourceX = 0;
+                        sourceY = (h - sourceHeight) / 2;
+                    }
+
+                    canvas.getContext('2d').drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, targetWidth, targetHeight);
+                    
+                    const note = prompt('Photo label (e.g., "Front door lock", "Kitchen"):');
+                    const compressedData = canvas.toDataURL('image/jpeg', 0.7);
+                    const compressedSizeKB = (compressedData.length * 0.75 / 1024).toFixed(1); // Base64 is ~33% larger
+                    
+                    photos.push({
+                        data: compressedData,
+                        note: note || 'No label',
+                        originalSize: originalSizeKB,
+                        compressedSize: compressedSizeKB
+                    });
+                    
+                    displayPhotos();
+                    showMsg('success', `Photo added! (${originalSizeKB}MB → ${compressedSizeKB}KB)`);
+                    document.getElementById('cameraInput').value = '';
+                    updateLiveSummary();
+                    saveSession();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function displayPhotos() {
+            const container = document.getElementById('photosContainer');
+            if (photos.length === 0) {
+                container.classList.add('hidden');
+                return;
+            }
+            
+            container.classList.remove('hidden');
+            container.innerHTML = photos.map((p, i) => `
+                <div class="photo-item">
+                    <img src="${p.data}" alt="Photo ${i+1}">
+                    <div class="photo-note">${p.note}</div>
+                    <div style="font-size: 10px; color: #999; margin-bottom: 6px;">
+                        ${p.originalSize ? `Original: ${p.originalSize}MB → Optimized: ${p.compressedSize}KB` : 'Photo optimized'}
+                    </div>
+                    <button type="button" class="delete-btn" onclick="deletePhoto(${i})">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        function deletePhoto(i) {
+            photos.splice(i, 1);
+            displayPhotos();
+            updateLiveSummary();
+            saveSession();
+        }
+
+        // LIVE SUMMARY UPDATE
+        function updateLiveSummary() {
+            let totalBeds = 0;
+            let totalBaths = 0;
+            let totalCars = 0;
+
+            if (currentType === 'house') {
+                for (let i = 1; i < levelCount; i++) {
+                    totalBeds += parseInt(document.querySelector(`input[name="bedrooms_${i}"]`)?.value || 0);
+                    totalBaths += parseInt(document.querySelector(`input[name="bathrooms_${i}"]`)?.value || 0);
+                }
+                if (document.querySelector('input[name="carspaceType_Garage"]')?.checked) {
+                    totalCars += parseInt(document.querySelector('input[name="garageSpaces"]')?.value || 0);
+                }
+                if (document.querySelector('input[name="carspaceType_Carport"]')?.checked) {
+                    totalCars += parseInt(document.querySelector('input[name="carportSpaces"]')?.value || 0);
+                }
+            } else {
+                const layout = document.querySelector('input[name="aptLayout"]:checked')?.value;
+                if (layout === 'Split Level') {
+                    for (let i = 1; i < aptLevelCount; i++) {
+                        totalBeds += parseInt(document.querySelector(`input[name="aptBedrooms_${i}"]`)?.value || 0);
+                        totalBaths += parseInt(document.querySelector(`input[name="aptBathrooms_${i}"]`)?.value || 0);
+                    }
+                } else {
+                    totalBeds = parseInt(document.querySelector('input[name="bedroomsApt"]')?.value || 0);
+                    totalBaths = parseInt(document.querySelector('input[name="bathroomsApt"]')?.value || 0);
+                }
+                totalCars = parseInt(document.querySelector('input[name="aptCarspaceCount"]')?.value || 0);
+            }
+
+            document.getElementById('summaryBeds').textContent = totalBeds;
+            document.getElementById('summaryBaths').textContent = totalBaths;
+            document.getElementById('summaryCars').textContent = totalCars;
+            document.getElementById('summaryPhotos').textContent = photos.length;
+        }
+
+        // APARTMENT LAYOUT
+        function updateAptLayout() {
+            const layout = document.querySelector('input[name="aptLayout"]:checked')?.value;
+            document.getElementById('aptSingleLevel').classList.toggle('hidden', layout === 'Split Level');
+            document.getElementById('aptSplitLevelContainer').classList.toggle('hidden', layout !== 'Split Level');
+            
+            if (layout === 'Split Level' && document.getElementById('aptSplitLevels').children.length === 0) {
+                addAptLevel();
+            }
+        }
+
+        function addAptLevel() {
+            const container = document.getElementById('aptSplitLevels');
+            const div = document.createElement('div');
+            div.className = 'level-section';
+            const levelNum = aptLevelCount;
+            div.innerHTML = `
+                <div>
+                    <input type="text" name="aptLevelName_${levelNum}" placeholder="Level name (e.g., Upper, Lower, Main)" value="Level ${levelNum}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 8px; font-weight: 600; font-size: 14px;">
+                </div>
+                <div class="two-col">
+                    <div class="form-group">
+                        <label>Bedrooms</label>
+                        <input type="number" name="aptBedrooms_${levelNum}" min="0" placeholder="0" onchange="updateLiveSummary()">
+                    </div>
+                    <div class="form-group">
+                        <label>Bathrooms</label>
+                        <input type="number" name="aptBathrooms_${levelNum}" min="0" placeholder="0" onchange="updateLiveSummary()">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Rooms</label>
+                    <textarea name="aptRooms_${levelNum}" placeholder="List rooms on this level (e.g., Kitchen, Living, Study)"></textarea>
+                </div>
+                ${levelNum > 1 ? `<button type="button" class="delete-btn" onclick="removeAptLevel(this)" style="width: 100%; margin-top: 8px;">Remove Level</button>` : ''}
+            `;
+            container.appendChild(div);
+            aptLevelCount++;
+        }
+
+        function removeAptLevel(btn) {
+            btn.parentElement.remove();
+            saveSession();
+            updateLiveSummary();
+        }
+
+        // GARDEN MAINTENANCE NOTES
+        function updateGardenNotes() {
+            const lawnOwner = document.querySelector('input[name="lawnMaintenance"]:checked')?.value === 'Owner';
+            const gardenOwner = document.querySelector('input[name="gardenMaintenance"]:checked')?.value === 'Owner';
+            document.getElementById('lawnNotesField').classList.toggle('hidden', !lawnOwner);
+            document.getElementById('gardenNotesField').classList.toggle('hidden', !gardenOwner);
+        }
+
+        // Address suggestions
+        function suggestAddress() {
+            const input = document.getElementById('addressInput').value;
+            const suggestions = document.getElementById('addressSuggestions');
+            
+            if (input.length < 3) {
+                suggestions.innerHTML = '';
+                return;
+            }
+            
+            suggestions.innerHTML = `<small style="color: #666;">Address lookup available when connected to database</small>`;
+        }
+
+        // Form actions
+        function clearForm() {
+            if (!confirm('Clear all form data?')) return;
+            document.getElementById('inspectionForm').reset();
+            photos = [];
+            document.getElementById('photosContainer').classList.add('hidden');
+            localStorage.removeItem('property_checklist_draft');
+            showMsg('success', 'Form cleared!');
+        }
+
+        function showMsg(type, text) {
+            const el = document.getElementById(type === 'success' ? 'successMsg' : 'errorMsg');
+            el.textContent = text;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 2000);
+        }
+
+        // PDF Download - Optimized for iPhone
+        function downloadPDF() {
+            const addressInput = document.querySelector('input[name="address"]');
+            const dateInput = document.querySelector('input[name="inspectionDate"]');
+            const rentInput = document.querySelector('input[name="proposedRent"]');
+            
+            if (!addressInput || !addressInput.value) {
+                showMsg('error', 'Enter address');
+                return;
+            }
+            
+            if (!dateInput || !dateInput.value) {
+                showMsg('error', 'Enter date');
+                return;
+            }
+            
+            if (!rentInput || !rentInput.value) {
+                showMsg('error', 'Enter rent');
+                return;
+            }
+            
+            try {
+                if (typeof html2pdf === 'undefined') {
+                    showMsg('error', 'PDF library loading... try again in a moment');
+                    return;
+                }
+                
+                showMsg('success', 'Generating PDF... please wait');
+                
+                // Build clean HTML with only filled data
+                const cleanHTML = generateCleanPDF();
+                const filename = `Property_${addressInput.value.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_${dateInput.value}`;
+                
+                // iPhone-friendly PDF options - Tight margins for 1-page summary
+                const opt = {
+                    margin: [5, 5, 5, 5],
+                    filename: `${filename}.pdf`,
+                    image: { type: 'jpeg', quality: 0.75 },
+                    html2canvas: { scale: 2, useCORS: true, allowTaint: true },
+                    jsPDF: { orientation: 'portrait', unit: 'mm', format: 'a4' }
+                };
+                
+                html2pdf().set(opt).from(cleanHTML).save().catch(err => {
+                    console.error('PDF Error:', err);
+                    showMsg('error', 'PDF generation failed. Try again.');
+                });
+            } catch (err) {
+                console.error('PDF Error:', err);
+                showMsg('error', 'PDF error: ' + err.message);
+            }
+        }
+
+        function generateCleanPDF() {
+            const form = document.getElementById('inspectionForm');
+            const isHouse = currentType === 'house';
+
+            // Helpers - gv handles input, textarea, radio, select
+            const gv = (name, type = 'input') => {
+                if (type === 'textarea') return document.querySelector(`textarea[name="${name}"]`)?.value || '';
+                if (type === 'radio') return document.querySelector(`input[name="${name}"]:checked`)?.value || '';
+                const inp = document.querySelector(`input[name="${name}"]`);
+                if (inp) return inp.value || '';
+                const sel = document.querySelector(`select[name="${name}"]`);
+                if (sel) return sel.value || '';
+                return '';
+            };
+            const has = (v) => v && v.toString().trim() !== '';
+            const chk = (v) => v ? '☑' : '☐';
+            const isChk = (name) => document.querySelector(`input[name="${name}"]`)?.checked;
+
+            // Styles for flowing layout
+            const wrap = 'word-wrap: break-word; overflow-wrap: break-word; word-break: break-word;';
+            const secHead = `font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #555; border-bottom: 1.5px solid #000; padding-bottom: 1px; margin: 6px 0 3px 0; ${wrap}`;
+            const lineS = `font-size: 9px; line-height: 1.4; margin: 1px 0; ${wrap}`;
+            const cellBdr = 'border: 1px solid #bbb;';
+            const tCellH = `${cellBdr} padding: 2px 5px; font-size: 8px; font-weight: 700; background: #f0f0f0;`;
+            const tCellS = `${cellBdr} padding: 2px 5px; font-size: 9px;`;
+
+            // Totals
+            let totalBeds = 0, totalBaths = 0, totalCars = 0;
+            if (isHouse) {
+                for (let i = 1; i < levelCount; i++) {
+                    totalBeds += parseInt(document.querySelector(`input[name="bedrooms_${i}"]`)?.value || 0);
+                    totalBaths += parseInt(document.querySelector(`input[name="bathrooms_${i}"]`)?.value || 0);
+                }
+                if (isChk('carspaceType_Garage')) totalCars += parseInt(gv('garageSpaces') || 0);
+                if (isChk('carspaceType_Carport')) totalCars += parseInt(gv('carportSpaces') || 0);
+            } else {
+                const layout = gv('aptLayout', 'radio');
+                if (layout === 'Split Level') {
+                    for (let i = 1; i < aptLevelCount; i++) {
+                        totalBeds += parseInt(document.querySelector(`input[name="aptBedrooms_${i}"]`)?.value || 0);
+                        totalBaths += parseInt(document.querySelector(`input[name="aptBathrooms_${i}"]`)?.value || 0);
+                    }
+                } else {
+                    totalBeds = parseInt(gv('bedroomsApt') || 0);
+                    totalBaths = parseInt(gv('bathroomsApt') || 0);
+                }
+                totalCars = parseInt(gv('aptCarspaceCount') || 0);
+            }
+
+            const address = gv('address');
+            const propertyType = isHouse ? 'House' : 'Apartment';
+
+            // ========== FLOWING LAYOUT - NO RIGID TABLES ==========
+            let html = `<div style="font-family: Arial, Helvetica, sans-serif; width: 190mm; font-size: 9px; color: #111; ${wrap}">`;
+
+            // ── HEADER ──
+            html += `<div style="border-bottom: 3px solid #000; padding-bottom: 4px; margin-bottom: 5px;">`;
+            html += `<div style="font-size: 18px; font-weight: 800; font-style: italic; line-height: 1.1;">New Management Property Checklist</div>`;
+            html += `<div style="font-size: 12px; font-weight: 700; margin-top: 3px; ${wrap}">${address}</div>`;
+            html += `<div style="font-size: 9px; color: #444; margin-top: 2px;">`;
+            html += `${gv('inspectionDate')}${has(gv('inspectionTime')) ? ' ' + gv('inspectionTime') : ''} &nbsp;|&nbsp; ${propertyType}`;
+            if (isHouse) {
+                if (has(gv('landSize'))) html += ` &nbsp;|&nbsp; Land: ${gv('landSize')}m²`;
+                if (has(gv('internalSize'))) html += ` &nbsp;|&nbsp; Internal: ${gv('internalSize')}m²`;
+                if (has(gv('leaseTerm'))) html += ` &nbsp;|&nbsp; Lease: ${gv('leaseTerm')}`;
+            } else {
+                if (has(gv('strataNumber'))) html += ` &nbsp;|&nbsp; SP: ${gv('strataNumber')}`;
+                if (has(gv('lotNumber'))) html += ` &nbsp;|&nbsp; Lot: ${gv('lotNumber')}`;
+                if (has(gv('internalSize'))) html += ` &nbsp;|&nbsp; ${gv('internalSize')}m²`;
+            }
+            html += `</div>`;
+            // Big numbers row
+            html += `<div style="margin-top: 4px; font-size: 10px;">`;
+            html += `<b style="font-size: 14px;">$${gv('proposedRent')}/wk</b>`;
+            html += ` &nbsp;&nbsp; <b>${totalBeds}</b> Bed &nbsp; <b>${totalBaths}</b> Bath &nbsp; <b>${totalCars}</b> Car`;
+            html += `</div>`;
+            // Rental notes right under rent
+            const rentalNotes = gv('rentalNotes', 'textarea');
+            if (has(rentalNotes)) {
+                html += `<div style="${lineS} color: #444;"><b>Rental notes:</b> ${rentalNotes}</div>`;
+            }
+            html += `</div>`; // end header
+
+            // ── OWNER ──
+            html += `<div style="${secHead}">Owner</div>`;
+            for (let i = 0; i < ownerCount; i++) {
+                const name = gv(`ownerName_${i}`), mobile = gv(`ownerMobile_${i}`), email = gv(`ownerEmail_${i}`);
+                if (has(name)) {
+                    let parts = [name];
+                    if (has(mobile)) parts.push(mobile);
+                    if (has(email)) parts.push(email);
+                    html += `<div style="${lineS}">${parts.join(' &nbsp;|&nbsp; ')}</div>`;
+                }
+            }
+            // Occupancy
+            const occ = gv('occupancy', 'radio'), mgd = gv('managedBy', 'radio');
+            let occLine = `${chk(occ === 'Vacant')} Vacant &nbsp; ${chk(occ === 'Tenanted')} Tenanted &nbsp; ${chk(occ === 'Owner-Occupied')} Owner-Occupied`;
+            if (has(mgd)) occLine += ` &nbsp;|&nbsp; Managed by: ${mgd}`;
+            html += `<div style="${lineS}">${occLine}</div>`;
+            if (occ !== 'Owner-Occupied') {
+                const leaseExp = gv('leaseExpiry'), vacTL = gv('vacatedTimeline');
+                if (has(leaseExp) || has(vacTL)) {
+                    let leaseLine = '';
+                    if (has(leaseExp)) leaseLine += `Lease exp: ${leaseExp}`;
+                    if (has(vacTL)) leaseLine += `${leaseLine ? ' &nbsp;|&nbsp; ' : ''}Vacating: ${vacTL}`;
+                    html += `<div style="${lineS}">${leaseLine}</div>`;
+                }
+            }
+
+            // ── FEATURES ──
+            html += `<div style="${secHead}">Features</div>`;
+            if (isHouse) {
+                const furn = gv('furnished', 'radio'), pets = gv('petsAllowed', 'radio');
+                html += `<div style="${lineS}">Furnished: ${furn} &nbsp;|&nbsp; Pets: ${pets}</div>`;
+                // Pool
+                const hasPool = gv('hasPool', 'radio');
+                if (hasPool === 'Yes') {
+                    const poolCert = gv('poolCertificate', 'radio'), poolExp = gv('poolCertExpiry');
+                    let poolLine = 'Swimming pool: Yes';
+                    if (has(poolCert) && poolCert === 'Yes') poolLine += ` &nbsp;|&nbsp; Compliance cert exp: ${poolExp}`;
+                    html += `<div style="${lineS}">${poolLine}</div>`;
+                }
+                // Car space
+                let carParts = [];
+                if (isChk('carspaceType_Garage')) {
+                    let cp = `Garage: ${gv('garageSpaces') || '0'}`;
+                    if (has(gv('garageNotes'))) cp += ` (${gv('garageNotes')})`;
+                    carParts.push(cp);
+                }
+                if (isChk('carspaceType_Carport')) {
+                    let cp = `Carport: ${gv('carportSpaces') || '0'}`;
+                    if (has(gv('carportNotes'))) cp += ` (${gv('carportNotes')})`;
+                    carParts.push(cp);
+                }
+                if (isChk('carspaceType_Street')) carParts.push('Street parking');
+                if (carParts.length) html += `<div style="${lineS}">Car space: <b>${totalCars}</b> — ${carParts.join(' &nbsp;|&nbsp; ')}</div>`;
+            } else {
+                let featParts = [];
+                if (has(gv('floorLevel'))) featParts.push(`Level: ${gv('floorLevel')}`);
+                if (has(gv('liftAccess', 'radio'))) featParts.push(`Lift: ${gv('liftAccess', 'radio')}`);
+                featParts.push(`Furnished: ${gv('furnishedApt', 'radio')}`);
+                featParts.push(`Pets: ${gv('petsAllowedApt', 'radio')}`);
+                html += `<div style="${lineS}">${featParts.join(' &nbsp;|&nbsp; ')}</div>`;
+
+                const balc = gv('hasBalcony', 'radio'), balcN = gv('balconyNotes', 'textarea');
+                const fac = gv('buildingFacilities', 'textarea');
+                if (balc === 'Yes') html += `<div style="${lineS}">Balcony: Yes${has(balcN) ? ' — ' + balcN : ''}</div>`;
+                if (has(fac)) html += `<div style="${lineS}">Facilities: ${fac}</div>`;
+
+                const emb = gv('embeddedNetwork', 'radio');
+                if (emb === 'Yes') {
+                    let embParts = [];
+                    const gasProv = gv('embeddedGasProvider'), elecProv = gv('embeddedElecProvider'), inetProv = gv('embeddedInternetProvider');
+                    if (has(gasProv)) embParts.push(`Gas: ${gasProv}`);
+                    if (has(elecProv)) embParts.push(`Elec: ${elecProv}`);
+                    if (has(inetProv)) embParts.push(`Internet: ${inetProv}`);
+                    if (embParts.length) html += `<div style="${lineS}">Embedded network: ${embParts.join(' &nbsp;|&nbsp; ')}</div>`;
+                }
+                html += `<div style="${lineS}">Separate water meter: ${gv('separateWater', 'radio')}</div>`;
+
+                // Apt car & storage
+                let aptCarLine = `Car space: ${gv('aptCarspaceCount') || '0'}`;
+                if (has(gv('aptCarspaceType', 'radio'))) aptCarLine += ` (${gv('aptCarspaceType', 'radio')})`;
+                if (has(gv('aptCarspaceNumber'))) aptCarLine += ` #${gv('aptCarspaceNumber')}`;
+                if (has(gv('aptCarspaceLevel'))) aptCarLine += ` Lvl ${gv('aptCarspaceLevel')}`;
+                const stor = gv('hasStorage', 'radio');
+                if (stor === 'Yes') {
+                    aptCarLine += ` &nbsp;|&nbsp; Storage: ${gv('storageNumber') || 'Yes'}`;
+                    if (has(gv('storageLevel'))) aptCarLine += ` (${gv('storageLevel')})`;
+                }
+                html += `<div style="${lineS}">${aptCarLine}</div>`;
+            }
+
+            // ── ACCOMMODATION (level table — only table we keep, content is short/controlled) ──
+            html += `<div style="${secHead}">Accommodation</div>`;
+            html += `<table style="width: 100%; border-collapse: collapse; margin-bottom: 2px;">`;
+            html += `<tr><td style="${tCellH} width: 25%;">Level</td><td style="${tCellH} width: 12%; text-align: center;">Bed</td><td style="${tCellH} width: 15%; text-align: center;">Bath</td><td style="${tCellH}">Other Rooms</td></tr>`;
+            if (isHouse) {
+                for (let i = 1; i < levelCount; i++) {
+                    const ln = gv(`levelName_${i}`), beds = gv(`bedrooms_${i}`), bths = gv(`bathrooms_${i}`), other = gv(`otherRooms_${i}`, 'textarea');
+                    if (has(beds) || has(bths) || has(other)) {
+                        html += `<tr><td style="${tCellS} font-weight: 600;">${ln || 'Level ' + i}</td><td style="${tCellS} text-align: center;">${beds || ''}</td><td style="${tCellS} text-align: center;">${bths || ''}</td><td style="${tCellS} ${wrap}">${other || ''}</td></tr>`;
+                    }
+                }
+            } else {
+                const layout = gv('aptLayout', 'radio');
+                if (layout === 'Split Level') {
+                    for (let i = 1; i < aptLevelCount; i++) {
+                        const ln = gv(`aptLevelName_${i}`), beds = gv(`aptBedrooms_${i}`), bths = gv(`aptBathrooms_${i}`), rooms = gv(`aptRooms_${i}`, 'textarea');
+                        if (has(beds) || has(bths) || has(rooms)) {
+                            html += `<tr><td style="${tCellS} font-weight: 600;">${ln || 'Level ' + i}</td><td style="${tCellS} text-align: center;">${beds || ''}</td><td style="${tCellS} text-align: center;">${bths || ''}</td><td style="${tCellS} ${wrap}">${rooms || ''}</td></tr>`;
+                        }
+                    }
+                } else {
+                    html += `<tr><td style="${tCellS} font-weight: 600;">Main</td><td style="${tCellS} text-align: center;">${gv('bedroomsApt') || ''}</td><td style="${tCellS} text-align: center;">${gv('bathroomsApt') || ''}</td><td style="${tCellS} ${wrap}">${gv('otherRoomsApt', 'textarea') || ''}</td></tr>`;
+                }
+            }
+            html += `<tr><td style="${tCellH}">Total</td><td style="${tCellH} text-align: center;">${totalBeds}</td><td style="${tCellH} text-align: center;">${totalBaths}</td><td style="${tCellH}"></td></tr>`;
+            html += `</table>`;
+            // Laundry/Dryer under level table
+            if (isHouse) {
+                const laundry = gv('laundryLocation', 'radio'), dryer = gv('hasDryer', 'radio');
+                let ldParts = [];
+                if (has(laundry) && laundry !== 'None') ldParts.push(`Laundry: ${laundry}`);
+                if (dryer === 'Yes') ldParts.push('Dryer: Yes');
+                if (ldParts.length) html += `<div style="${lineS}">${ldParts.join(' &nbsp;|&nbsp; ')}</div>`;
+            }
+
+            // ── FLOORING ──
+            html += `<div style="${secHead}">Flooring</div>`;
+            for (let i = 1; i < flooringCount; i++) {
+                const area = gv(`flooring_area_${i}`), type = gv(`flooring_type_${i}`);
+                const otherType = gv(`flooring_other_type_${i}`), size = gv(`flooring_size_${i}`);
+                const notes = gv(`flooring_notes_${i}`, 'textarea');
+                if (has(area) || has(type)) {
+                    let mat = type === 'Other' && has(otherType) ? otherType : type;
+                    let entry = `<b>${area || 'Area'}</b>`;
+                    if (has(mat)) entry += ` — ${mat}`;
+                    if (has(size)) entry += ` (${size}m²)`;
+                    if (has(notes)) entry += ` — ${notes}`;
+                    html += `<div style="${lineS}">${entry}</div>`;
+                }
+            }
+            // Wardrobes
+            const wBI = isChk('wardrobeBuiltIn'), wWI = isChk('wardrobeWalkIn');
+            if (wBI || wWI) {
+                let wp = [];
+                if (wBI) { const n = gv('wardrobeBuiltInNotes', 'textarea'); wp.push(`Built-in${has(n) ? ' — ' + n : ''}`); }
+                if (wWI) { const n = gv('wardrobeWalkInNotes', 'textarea'); wp.push(`Walk-in${has(n) ? ' — ' + n : ''}`); }
+                html += `<div style="${lineS}"><b>Wardrobes:</b> ${wp.join(' &nbsp;|&nbsp; ')}</div>`;
+            }
+
+            // ── APPLIANCES ──
+            html += `<div style="${secHead}">Appliances</div>`;
+            let appChecked = [];
+            for (let i = 0; i < defaultAppliances.length; i++) {
+                if (isChk(`appliance_${i}`)) {
+                    const brand = gv(`appliance_brand_${i}`), notes = gv(`appliance_notes_${i}`, 'textarea');
+                    const ckType = gv(`cooktop_type_${i}`);
+                    let name = defaultAppliances[i];
+                    let detail = '';
+                    if (name === 'Cooktop' && has(ckType)) detail = ckType;
+                    if (has(brand)) detail += (detail ? ', ' : '') + brand;
+                    if (has(notes)) detail += (detail ? ' — ' : '') + notes;
+                    appChecked.push(`<b>${name}</b>${detail ? ' (' + detail + ')' : ''}`);
+                }
+            }
+            // Custom appliances
+            for (let i = 0; i < customApplianceCount; i++) {
+                const idx = 'custom_' + i;
+                if (isChk(`appliance_${idx}`)) {
+                    const name = gv(`appliance_name_${idx}`), brand = gv(`appliance_brand_${idx}`), notes = gv(`appliance_notes_${idx}`, 'textarea');
+                    let detail = '';
+                    if (has(brand)) detail = brand;
+                    if (has(notes)) detail += (detail ? ' — ' : '') + notes;
+                    appChecked.push(`<b>${has(name) ? name : 'Custom'}</b>${detail ? ' (' + detail + ')' : ''}`);
+                }
+            }
+            if (appChecked.length) html += `<div style="${lineS}">${appChecked.join(' &nbsp;|&nbsp; ')}</div>`;
+
+            // Security
+            const hasAlarm = gv('hasAlarm', 'radio'), alarmCode = gv('alarmCode', 'textarea');
+            if (hasAlarm === 'Yes') {
+                html += `<div style="${lineS}"><b>Security Alarm:</b> Yes${has(alarmCode) ? ' — Code: ' + alarmCode : ''}</div>`;
+            }
+
+            // ── CONDITION ──
+            html += `<div style="${secHead}">Condition</div>`;
+            const condition = gv('condition', 'radio'), defects = gv('defects', 'textarea');
+            html += `<div style="${lineS}"><b>${condition || 'Good'}</b>${has(defects) ? ' — ' + defects : ''}</div>`;
+
+            // ── MAINTENANCE (house) ──
+            if (isHouse) {
+                const hasPool = gv('hasPool', 'radio');
+                const lawn = gv('lawnMaintenance', 'radio'), lawnN = gv('lawnNotes', 'textarea');
+                const garden = gv('gardenMaintenance', 'radio'), gardenN = gv('gardenNotes', 'textarea');
+                let showMaint = hasPool === 'Yes' || has(lawn) || has(garden);
+                if (showMaint) {
+                    html += `<div style="${secHead}">Maintenance</div>`;
+                    if (hasPool === 'Yes') {
+                        const pMaint = gv('poolMaintenance', 'radio'), pFreq = gv('poolFrequency'), chemCost = gv('chemicalCosts', 'radio');
+                        let poolLine = `Pool maint: ${pMaint || 'N/A'}`;
+                        if (has(pFreq)) poolLine += ` (${pFreq})`;
+                        if (has(chemCost)) poolLine += ` &nbsp;|&nbsp; Chemicals: ${chemCost}`;
+                        html += `<div style="${lineS}">${poolLine}</div>`;
+                    }
+                    if (has(lawn)) html += `<div style="${lineS}">Lawn: ${lawn}${has(lawnN) ? ' — ' + lawnN : ''}</div>`;
+                    if (has(garden)) html += `<div style="${lineS}">Garden: ${garden}${has(gardenN) ? ' — ' + gardenN : ''}</div>`;
+                }
+            }
+
+            // ── TIMELINE ──
+            html += `<div style="${secHead}">Timeline</div>`;
+            const tlFields = [
+                ['Available', 'availableDate'], ['Move-out', 'moveOutDate'], ['Clean', 'cleanDate'],
+                ['Photography', 'photographyDate'], ['Listing', 'listingDate'], ['1st Open', 'firstOpenDate']
+            ];
+            let tlParts = [];
+            tlFields.forEach(([label, field]) => {
+                const v = gv(field);
+                if (has(v)) tlParts.push(`${label}: ${v}`);
+            });
+            if (tlParts.length) html += `<div style="${lineS}">${tlParts.join(' &nbsp;|&nbsp; ')}</div>`;
+
+            // ── NOTES ──
+            const notes = gv('notes', 'textarea');
+            if (has(notes)) {
+                html += `<div style="${secHead}">Notes</div>`;
+                html += `<div style="${lineS}">${notes}</div>`;
+            }
+
+            // FOOTER
+            html += `<div style="margin-top: 5px; text-align: right; color: #aaa; font-size: 7px;">Generated ${new Date().toLocaleDateString()} &nbsp; Page 1${photos.length > 0 ? ' of 1+' : ''}</div>`;
+            html += `</div>`; // end page 1
+
+            // ═══════════════════════════════════════════════
+            // PHOTOS (PAGE 2+)
+            // ═══════════════════════════════════════════════
+            if (photos.length > 0) {
+                html += `<div style="page-break-before: always;"></div>`;
+                html += `<div style="font-family: Arial, Helvetica, sans-serif; width: 190mm; ${wrap}">`;
+                html += `<div style="font-size: 14px; font-weight: 700; border-bottom: 2.5px solid #000; padding-bottom: 3px; margin-bottom: 10px; ${wrap}">Photos — ${address}</div>`;
+
+                photos.forEach((photo, idx) => {
+                    html += `<div style="width: 100%; margin-bottom: 14px; page-break-inside: avoid;">
+                        <div style="font-size: 10px; font-weight: 600; margin-bottom: 4px; padding-left: 8px; border-left: 3px solid #000;">${photo.note}</div>
+                        <img src="${photo.data}" style="width: 100%; height: auto; display: block; border: 1px solid #ddd; border-radius: 3px;">
+                    </div>`;
+                });
+
+                html += `<div style="text-align: right; color: #999; font-size: 7px; margin-top: 4px;">Page 2+ &nbsp; ${photos.length} photo(s)</div>`;
+                html += `</div>`;
+            }
+
+            return html;
+        }
+    </script>
+</body>
+</html>
