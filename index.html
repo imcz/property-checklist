@@ -589,6 +589,26 @@
                 <button class="active" id="typeHouseBtn" onclick="selectType('house')">🏠 House</button>
                 <button id="typeAptBtn" onclick="selectType('apartment')">🏢 Apt</button>
             </div>
+            <div id="aptSubtypeRow" class="hidden" style="margin-top: 8px;">
+                <div class="radio-group" style="justify-content: center;">
+                    <div class="radio-item">
+                        <input type="radio" name="aptSubtype" value="Apartment" checked>
+                        <label>Apartment</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" name="aptSubtype" value="Unit">
+                        <label>Unit</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" name="aptSubtype" value="Townhouse">
+                        <label>Townhouse</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" name="aptSubtype" value="Villa">
+                        <label>Villa</label>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="form-wrapper">
@@ -808,6 +828,78 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <label>NBN Connection</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" name="nbnConnection" value="Yes" onchange="document.getElementById('nbnNotes').classList.remove('hidden')">
+                                    <label>Yes</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" name="nbnConnection" value="No" checked onchange="document.getElementById('nbnNotes').classList.add('hidden')">
+                                    <label>No</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="nbnNotes" class="form-group hidden">
+                            <label>NBN Notes</label>
+                            <textarea name="nbnNotes" placeholder="Connection type (FTTP/FTTN/HFC), location of NTD box, speed tier..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Solar System</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" name="hasSolarSystem" value="Yes" onchange="document.getElementById('solarSystemNotes').classList.remove('hidden')">
+                                    <label>Yes</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" name="hasSolarSystem" value="No" checked onchange="document.getElementById('solarSystemNotes').classList.add('hidden')">
+                                    <label>No</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="solarSystemNotes" class="form-group hidden">
+                            <label>Solar System Notes</label>
+                            <textarea name="solarSystemNotes" placeholder="System size (kW), inverter brand, age..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Solar Panel (Hot Water)</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" name="hasSolarPanel" value="Yes" onchange="document.getElementById('solarPanelNotes').classList.remove('hidden')">
+                                    <label>Yes</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" name="hasSolarPanel" value="No" checked onchange="document.getElementById('solarPanelNotes').classList.add('hidden')">
+                                    <label>No</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="solarPanelNotes" class="form-group hidden">
+                            <label>Solar Panel Notes</label>
+                            <textarea name="solarPanelNotes" placeholder="Brand, condition, roof location..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Pool Heating</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" name="hasPoolHeating" value="Yes" onchange="document.getElementById('poolHeatingNotes').classList.remove('hidden')">
+                                    <label>Yes</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" name="hasPoolHeating" value="No" checked onchange="document.getElementById('poolHeatingNotes').classList.add('hidden')">
+                                    <label>No</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="poolHeatingNotes" class="form-group hidden">
+                            <label>Pool Heating Notes</label>
+                            <textarea name="poolHeatingNotes" placeholder="Type (gas/solar/electric/heat pump), brand..."></textarea>
+                        </div>
                     </div>
 
                     <!-- APARTMENT FEATURES -->
@@ -948,6 +1040,24 @@
                                     <label>Yes</label>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>NBN Connection</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" name="aptNbnConnection" value="Yes" onchange="document.getElementById('aptNbnNotes').classList.remove('hidden')">
+                                    <label>Yes</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" name="aptNbnConnection" value="No" checked onchange="document.getElementById('aptNbnNotes').classList.add('hidden')">
+                                    <label>No</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="aptNbnNotes" class="form-group hidden">
+                            <label>NBN Notes</label>
+                            <textarea name="aptNbnNotes" placeholder="Connection type (FTTP/FTTN/HFC), location of NTD box, speed tier..."></textarea>
                         </div>
                     </div>
                 </div>
@@ -1231,6 +1341,68 @@
                         <label>Alarm Code & Notes</label>
                         <textarea name="alarmCode" placeholder="Code and any relevant notes..."></textarea>
                     </div>
+
+                    <div class="form-group">
+                        <label>Smoke Alarms</label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" name="smokeAlarmType" value="Battery" onchange="document.getElementById('smokeAlarmNotes').classList.remove('hidden')">
+                                <label>Battery</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" name="smokeAlarmType" value="Wired" onchange="document.getElementById('smokeAlarmNotes').classList.remove('hidden')">
+                                <label>Wired</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" name="smokeAlarmType" value="None" checked onchange="document.getElementById('smokeAlarmNotes').classList.add('hidden')">
+                                <label>None</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="smokeAlarmNotes" class="form-group hidden">
+                        <label>Smoke Alarm Notes</label>
+                        <textarea name="smokeAlarmNotes" placeholder="Locations, last tested, expiry dates..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Hot Water System</label>
+                        <select name="hotWaterType">
+                            <option value="">— Select —</option>
+                            <option value="Electric">Electric</option>
+                            <option value="Gas">Gas</option>
+                            <option value="Solar">Solar</option>
+                            <option value="Heat Pump">Heat Pump</option>
+                            <option value="Instantaneous Gas">Instantaneous Gas</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Hot Water Notes</label>
+                        <textarea name="hotWaterNotes" placeholder="Brand, age, location, capacity..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Air Conditioning</label>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" name="hasAirCon" value="Yes" onchange="document.getElementById('airConDetails').classList.remove('hidden')">
+                                <label>Yes</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" name="hasAirCon" value="No" checked onchange="document.getElementById('airConDetails').classList.add('hidden')">
+                                <label>No</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="airConDetails" class="hidden">
+                        <div id="airConUnitsContainer"></div>
+                        <button type="button" class="add-btn" onclick="addAirConUnit()">+ Add A/C Unit</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Access Instructions</label>
+                        <textarea name="accessInstructions" placeholder="Gate code, key lockbox, access hours, security intercom..."></textarea>
+                    </div>
                 </div>
 
                 <!-- SECTION 10: CONDITION -->
@@ -1376,9 +1548,64 @@
                     </div>
                 </div>
 
-                <!-- SECTION 12: PROPERTY TIMELINE -->
+                <!-- STRATA CONTACT DETAILS (APT ONLY) -->
+                <div class="form-section hidden" id="strataSection">
+                    <h3>12. Strata Contact</h3>
+
+                    <div class="form-group">
+                        <label>Strata Company Name</label>
+                        <input type="text" name="strataCompany" placeholder="e.g., Bright & Duggan">
+                    </div>
+                    <div class="form-group">
+                        <label>Strata Manager Name</label>
+                        <input type="text" name="strataManager" placeholder="Full name">
+                    </div>
+                    <div id="strataContactsContainer">
+                        <div class="form-group">
+                            <label>Contact Number</label>
+                            <input type="tel" name="strataPhone_0" placeholder="e.g., 02 9999 8888">
+                        </div>
+                        <div class="form-group">
+                            <label>Contact Email</label>
+                            <input type="email" name="strataEmail_0" placeholder="e.g., info@strata.com.au">
+                        </div>
+                    </div>
+                    <button type="button" class="add-btn" onclick="addStrataContact()">+ Add Contact</button>
+
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #eee;">
+                        <div class="form-group">
+                            <label>Building Manager</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" name="hasBuildingManager" value="Yes" onchange="document.getElementById('buildingManagerDetails').classList.remove('hidden')">
+                                    <label>Yes</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" name="hasBuildingManager" value="No" checked onchange="document.getElementById('buildingManagerDetails').classList.add('hidden')">
+                                    <label>No</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="buildingManagerDetails" class="hidden">
+                            <div class="form-group">
+                                <label>Building Manager Name</label>
+                                <input type="text" name="buildingManagerName" placeholder="Full name">
+                            </div>
+                            <div class="form-group">
+                                <label>Contact Number</label>
+                                <input type="tel" name="buildingManagerPhone" placeholder="e.g., 0412 345 678">
+                            </div>
+                            <div class="form-group">
+                                <label>Contact Email</label>
+                                <input type="email" name="buildingManagerEmail" placeholder="manager@building.com.au">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION 13: PROPERTY TIMELINE -->
                 <div class="form-section">
-                    <h3>12. Property Timeline</h3>
+                    <h3>13. Property Timeline</h3>
 
                     <div class="two-col">
                         <div class="form-group">
@@ -1412,9 +1639,9 @@
                     </div>
                 </div>
 
-                <!-- SECTION 13: PHOTOS -->
+                <!-- SECTION 14: PHOTOS -->
                 <div class="form-section">
-                    <h3>13. Photos & Key Records</h3>
+                    <h3>14. Photos & Key Records</h3>
                     
                     <p style="font-size: 11px; color: #666; margin-bottom: 8px;">Capture property photos and key/lock records. E.g., front door lock, building key, unit lock, meter location.</p>
                     
@@ -1424,9 +1651,9 @@
                     <div id="photosContainer" class="photo-section hidden"></div>
                 </div>
 
-                <!-- SECTION 14: GENERAL NOTES -->
+                <!-- SECTION 15: GENERAL NOTES -->
                 <div class="form-section">
-                    <h3>14. General Notes</h3>
+                    <h3>15. General Notes</h3>
                     
                     <div class="form-group">
                         <label>Additional Observations</label>
@@ -1454,6 +1681,8 @@
         let flooringCount = 1;
         let customApplianceCount = 0;
         let aptLevelCount = 1;
+        let airConUnitCount = 0;
+        let strataContactCount = 1;
 
         const defaultAppliances = ['Air Con', 'Oven', 'Cooktop', 'Dishwasher', 'Rangehood', 'Dryer'];
 
@@ -1625,6 +1854,8 @@
                 document.getElementById('house-accommodation').classList.remove('hidden');
                 document.getElementById('apt-accommodation').classList.add('hidden');
                 document.getElementById('maintenanceSection').classList.remove('hidden');
+                document.getElementById('aptSubtypeRow').classList.add('hidden');
+                document.getElementById('strataSection').classList.add('hidden');
             } else {
                 document.getElementById('house-1').classList.add('hidden');
                 document.getElementById('apt-1').classList.remove('hidden');
@@ -1634,6 +1865,8 @@
                 document.getElementById('apt-accommodation').classList.remove('hidden');
                 document.getElementById('maintenanceSection').classList.add('hidden');
                 document.getElementById('embeddedNetworkFields').classList.add('hidden');
+                document.getElementById('aptSubtypeRow').classList.remove('hidden');
+                document.getElementById('strataSection').classList.remove('hidden');
             }
             saveSession();
         }
@@ -1855,6 +2088,61 @@
             const hasAlarm = document.querySelector('input[name="hasAlarm"]:checked')?.value;
             const section = document.getElementById('alarmCodeSection');
             section.classList.toggle('hidden', hasAlarm !== 'Yes');
+        }
+
+        // AIR CON UNITS
+        function addAirConUnit() {
+            const container = document.getElementById('airConUnitsContainer');
+            const div = document.createElement('div');
+            div.className = 'form-group';
+            div.style.cssText = 'border: 1px solid #eee; border-radius: 8px; padding: 12px; margin-bottom: 8px; position: relative;';
+            div.innerHTML = `
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove(); airConUnitCount--; saveSession();" style="position: absolute; top: 4px; right: 4px;">✕</button>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select name="airConType_${airConUnitCount}">
+                        <option value="">— Select —</option>
+                        <option value="Split System">Split System</option>
+                        <option value="Ducted">Ducted</option>
+                        <option value="Window">Window</option>
+                        <option value="Portable">Portable</option>
+                        <option value="Multi-Split">Multi-Split</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Area / Location</label>
+                    <input type="text" name="airConArea_${airConUnitCount}" placeholder="e.g., Living room, Master bedroom">
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea name="airConNotes_${airConUnitCount}" placeholder="Brand, model, condition..."></textarea>
+                </div>
+            `;
+            container.appendChild(div);
+            airConUnitCount++;
+            saveSession();
+        }
+
+        // STRATA CONTACTS
+        function addStrataContact() {
+            const container = document.getElementById('strataContactsContainer');
+            const div = document.createElement('div');
+            div.style.cssText = 'border-top: 1px solid #eee; padding-top: 8px; margin-top: 8px; position: relative;';
+            div.innerHTML = `
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove(); strataContactCount--; saveSession();" style="position: absolute; top: 4px; right: 4px;">✕</button>
+                <div class="form-group">
+                    <label>Contact Number</label>
+                    <input type="tel" name="strataPhone_${strataContactCount}" placeholder="e.g., 02 9999 8888">
+                </div>
+                <div class="form-group">
+                    <label>Contact Email</label>
+                    <input type="email" name="strataEmail_${strataContactCount}" placeholder="e.g., info@strata.com.au">
+                </div>
+            `;
+            container.appendChild(div);
+            strataContactCount++;
+            saveSession();
         }
 
         // BALCONY
@@ -2239,7 +2527,7 @@
             }
 
             const address = gv('address');
-            const propertyType = isHouse ? 'House' : 'Apartment';
+            const propertyType = isHouse ? 'House' : (gv('aptSubtype', 'radio') || 'Apartment');
 
             // ========== FLOWING LAYOUT - NO RIGID TABLES ==========
             let html = `<div style="font-family: Arial, Helvetica, sans-serif; width: 190mm; font-size: 9px; color: #111; ${wrap}">`;
@@ -2303,6 +2591,26 @@
             if (isHouse) {
                 const furn = gv('furnished', 'radio'), pets = gv('petsAllowed', 'radio');
                 html += `<div style="${lineS}">Furnished: ${furn} &nbsp;|&nbsp; Pets: ${pets}</div>`;
+                // NBN
+                const nbn = gv('nbnConnection', 'radio'), nbnN = gv('nbnNotes', 'textarea');
+                if (nbn === 'Yes') {
+                    html += `<div style="${lineS}">NBN: Yes${has(nbnN) ? ' — ' + nbnN : ''}</div>`;
+                }
+                // Solar System
+                const solar = gv('hasSolarSystem', 'radio'), solarN = gv('solarSystemNotes', 'textarea');
+                if (solar === 'Yes') {
+                    html += `<div style="${lineS}">Solar system: Yes${has(solarN) ? ' — ' + solarN : ''}</div>`;
+                }
+                // Solar Panel (Hot Water)
+                const solarP = gv('hasSolarPanel', 'radio'), solarPN = gv('solarPanelNotes', 'textarea');
+                if (solarP === 'Yes') {
+                    html += `<div style="${lineS}">Solar panel (HW): Yes${has(solarPN) ? ' — ' + solarPN : ''}</div>`;
+                }
+                // Pool Heating
+                const poolHeat = gv('hasPoolHeating', 'radio'), poolHeatN = gv('poolHeatingNotes', 'textarea');
+                if (poolHeat === 'Yes') {
+                    html += `<div style="${lineS}">Pool heating: Yes${has(poolHeatN) ? ' — ' + poolHeatN : ''}</div>`;
+                }
                 // Pool
                 const hasPool = gv('hasPool', 'radio');
                 if (hasPool === 'Yes') {
@@ -2351,6 +2659,11 @@
                 let waterLine = `Separate water meter: ${sepWater}`;
                 if (sepWater === 'Yes' && has(waterNotes)) waterLine += ` — ${waterNotes}`;
                 html += `<div style="${lineS}">${waterLine}</div>`;
+                // NBN (Apt)
+                const aptNbn = gv('aptNbnConnection', 'radio'), aptNbnN = gv('aptNbnNotes', 'textarea');
+                if (aptNbn === 'Yes') {
+                    html += `<div style="${lineS}">NBN: Yes${has(aptNbnN) ? ' — ' + aptNbnN : ''}</div>`;
+                }
 
                 // Apt car & storage
                 let aptCarLine = `Car space: ${gv('aptCarspaceCount') || '0'}`;
@@ -2458,6 +2771,36 @@
             if (hasAlarm === 'Yes') {
                 html += `<div style="${lineS}"><b>Security Alarm:</b> Yes${has(alarmCode) ? ' — Code: ' + alarmCode : ''}</div>`;
             }
+            // Smoke Alarms
+            const smokeType = gv('smokeAlarmType', 'radio'), smokeN = gv('smokeAlarmNotes', 'textarea');
+            if (has(smokeType) && smokeType !== 'None') {
+                html += `<div style="${lineS}">Smoke alarms: ${smokeType}${has(smokeN) ? ' — ' + smokeN : ''}</div>`;
+            }
+            // Hot Water
+            const hwType = gv('hotWaterType'), hwN = gv('hotWaterNotes', 'textarea');
+            if (has(hwType)) {
+                html += `<div style="${lineS}">Hot water: ${hwType}${has(hwN) ? ' — ' + hwN : ''}</div>`;
+            }
+            // Air Conditioning
+            const hasAC = gv('hasAirCon', 'radio');
+            if (hasAC === 'Yes') {
+                let acParts = [];
+                for (let i = 0; i < airConUnitCount; i++) {
+                    const acType = gv(`airConType_${i}`), acArea = gv(`airConArea_${i}`), acN = gv(`airConNotes_${i}`, 'textarea');
+                    if (has(acType) || has(acArea)) {
+                        let p = has(acType) ? acType : '';
+                        if (has(acArea)) p += (p ? ' — ' : '') + acArea;
+                        if (has(acN)) p += ` (${acN})`;
+                        acParts.push(p);
+                    }
+                }
+                html += `<div style="${lineS}">Air con: ${acParts.length ? acParts.join(' &nbsp;|&nbsp; ') : 'Yes'}</div>`;
+            }
+            // Access Instructions
+            const accessInst = gv('accessInstructions', 'textarea');
+            if (has(accessInst)) {
+                html += `<div style="${lineS}"><b>Access:</b> ${accessInst}</div>`;
+            }
 
             // ── CONDITION ──
             html += `<div style="${secHead}">Condition</div>`;
@@ -2481,6 +2824,37 @@
                     }
                     if (has(lawn)) html += `<div style="${lineS}">Lawn: ${lawn}${has(lawnN) ? ' — ' + lawnN : ''}</div>`;
                     if (has(garden)) html += `<div style="${lineS}">Garden: ${garden}${has(gardenN) ? ' — ' + gardenN : ''}</div>`;
+                }
+            }
+
+            // ── STRATA CONTACT (apt only) ──
+            if (!isHouse) {
+                const strCo = gv('strataCompany'), strMgr = gv('strataManager');
+                const bmgr = gv('hasBuildingManager', 'radio');
+                if (has(strCo) || has(strMgr) || bmgr === 'Yes') {
+                    html += `<div style="${secHead}">Strata Contact</div>`;
+                    let strParts = [];
+                    if (has(strCo)) strParts.push(strCo);
+                    if (has(strMgr)) strParts.push(`Manager: ${strMgr}`);
+                    if (strParts.length) html += `<div style="${lineS}">${strParts.join(' &nbsp;|&nbsp; ')}</div>`;
+                    // Strata contacts (phone/email pairs)
+                    for (let i = 0; i < strataContactCount; i++) {
+                        const ph = gv(`strataPhone_${i}`), em = gv(`strataEmail_${i}`);
+                        if (has(ph) || has(em)) {
+                            let cp = [];
+                            if (has(ph)) cp.push(ph);
+                            if (has(em)) cp.push(em);
+                            html += `<div style="${lineS}">${cp.join(' &nbsp;|&nbsp; ')}</div>`;
+                        }
+                    }
+                    if (bmgr === 'Yes') {
+                        const bmName = gv('buildingManagerName'), bmPh = gv('buildingManagerPhone'), bmEm = gv('buildingManagerEmail');
+                        let bmParts = ['Bldg mgr'];
+                        if (has(bmName)) bmParts.push(bmName);
+                        if (has(bmPh)) bmParts.push(bmPh);
+                        if (has(bmEm)) bmParts.push(bmEm);
+                        html += `<div style="${lineS}">${bmParts.join(' &nbsp;|&nbsp; ')}</div>`;
+                    }
                 }
             }
 
