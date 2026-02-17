@@ -589,25 +589,13 @@
                 <button class="active" id="typeHouseBtn" onclick="selectType('house')">🏠 House</button>
                 <button id="typeAptBtn" onclick="selectType('apartment')">🏢 Apt</button>
             </div>
-            <div id="aptSubtypeRow" class="hidden" style="margin-top: 8px;">
-                <div class="radio-group" style="justify-content: center;">
-                    <div class="radio-item">
-                        <input type="radio" name="aptSubtype" value="Apartment" checked>
-                        <label>Apartment</label>
-                    </div>
-                    <div class="radio-item">
-                        <input type="radio" name="aptSubtype" value="Unit">
-                        <label>Unit</label>
-                    </div>
-                    <div class="radio-item">
-                        <input type="radio" name="aptSubtype" value="Townhouse">
-                        <label>Townhouse</label>
-                    </div>
-                    <div class="radio-item">
-                        <input type="radio" name="aptSubtype" value="Villa">
-                        <label>Villa</label>
-                    </div>
-                </div>
+            <div id="aptSubtypeRow" class="hidden" style="margin-top: 8px; text-align: center;">
+                <select name="aptSubtype" style="font-size: 14px; padding: 6px 12px; border-radius: 8px; border: 1px solid #ccc; background: #f9f9f9; min-width: 160px;">
+                    <option value="Apartment">Apartment</option>
+                    <option value="Unit">Unit</option>
+                    <option value="Townhouse">Townhouse</option>
+                    <option value="Villa">Villa</option>
+                </select>
             </div>
         </div>
 
@@ -866,7 +854,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Solar Panel (Hot Water)</label>
+                            <label>Solar Battery</label>
                             <div class="radio-group">
                                 <div class="radio-item">
                                     <input type="radio" name="hasSolarPanel" value="Yes" onchange="document.getElementById('solarPanelNotes').classList.remove('hidden')">
@@ -879,8 +867,8 @@
                             </div>
                         </div>
                         <div id="solarPanelNotes" class="form-group hidden">
-                            <label>Solar Panel Notes</label>
-                            <textarea name="solarPanelNotes" placeholder="Brand, condition, roof location..."></textarea>
+                            <label>Solar Battery Notes</label>
+                            <textarea name="solarPanelNotes" placeholder="Brand, capacity (kWh), condition..."></textarea>
                         </div>
 
                         <div class="form-group">
@@ -2527,7 +2515,7 @@
             }
 
             const address = gv('address');
-            const propertyType = isHouse ? 'House' : (gv('aptSubtype', 'radio') || 'Apartment');
+            const propertyType = isHouse ? 'House' : (gv('aptSubtype') || 'Apartment');
 
             // ========== FLOWING LAYOUT - NO RIGID TABLES ==========
             let html = `<div style="font-family: Arial, Helvetica, sans-serif; width: 190mm; font-size: 9px; color: #111; ${wrap}">`;
@@ -2601,10 +2589,10 @@
                 if (solar === 'Yes') {
                     html += `<div style="${lineS}">Solar system: Yes${has(solarN) ? ' — ' + solarN : ''}</div>`;
                 }
-                // Solar Panel (Hot Water)
+                // Solar Battery
                 const solarP = gv('hasSolarPanel', 'radio'), solarPN = gv('solarPanelNotes', 'textarea');
                 if (solarP === 'Yes') {
-                    html += `<div style="${lineS}">Solar panel (HW): Yes${has(solarPN) ? ' — ' + solarPN : ''}</div>`;
+                    html += `<div style="${lineS}">Solar battery: Yes${has(solarPN) ? ' — ' + solarPN : ''}</div>`;
                 }
                 // Pool Heating
                 const poolHeat = gv('hasPoolHeating', 'radio'), poolHeatN = gv('poolHeatingNotes', 'textarea');
