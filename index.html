@@ -818,6 +818,42 @@
                         </div>
 
                         <div class="form-group">
+                            <label>Aspect</label>
+                            <textarea name="aspect" placeholder="e.g., N (backyard), NE (kitchen), E (living room)"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Blinds / Window Coverings</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item"><input type="checkbox" name="blinds_Roller" onchange="updateBlindsNotes()"><label>Roller Blinds</label></div>
+                                <div class="checkbox-item"><input type="checkbox" name="blinds_Vertical" onchange="updateBlindsNotes()"><label>Vertical Blinds</label></div>
+                                <div class="checkbox-item"><input type="checkbox" name="blinds_Curtains" onchange="updateBlindsNotes()"><label>Curtains</label></div>
+                                <div class="checkbox-item"><input type="checkbox" name="blinds_Plantation" onchange="updateBlindsNotes()"><label>Plantation</label></div>
+                                <div class="checkbox-item"><input type="checkbox" name="blinds_Other" onchange="updateBlindsNotes()"><label>Other</label></div>
+                            </div>
+                        </div>
+                        <div id="blindsRollerNotes" class="form-group hidden">
+                            <label>Roller Blinds — Areas</label>
+                            <textarea name="blindsRollerNotes" placeholder="e.g., Living room, Bedroom 1, Kitchen"></textarea>
+                        </div>
+                        <div id="blindsVerticalNotes" class="form-group hidden">
+                            <label>Vertical Blinds — Areas</label>
+                            <textarea name="blindsVerticalNotes" placeholder="e.g., Living room, Bedroom 2"></textarea>
+                        </div>
+                        <div id="blindsCurtainsNotes" class="form-group hidden">
+                            <label>Curtains — Areas</label>
+                            <textarea name="blindsCurtainsNotes" placeholder="e.g., Master bedroom, Dining"></textarea>
+                        </div>
+                        <div id="blindsPlantationNotes" class="form-group hidden">
+                            <label>Plantation — Areas</label>
+                            <textarea name="blindsPlantationNotes" placeholder="e.g., Front windows, Study"></textarea>
+                        </div>
+                        <div id="blindsOtherNotes" class="form-group hidden">
+                            <label>Other — Details & Areas</label>
+                            <textarea name="blindsOtherNotes" placeholder="Type and areas"></textarea>
+                        </div>
+
+                        <div class="form-group">
                             <label>NBN Connection</label>
                             <div class="radio-group">
                                 <div class="radio-item">
@@ -1028,6 +1064,42 @@
                                     <label>Yes</label>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Aspect</label>
+                            <textarea name="aptAspect" placeholder="e.g., N (backyard), NE (kitchen), E (living room)"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Blinds / Window Coverings</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item"><input type="checkbox" name="aptBlinds_Roller" onchange="updateAptBlindsNotes()"><label>Roller Blinds</label></div>
+                                <div class="checkbox-item"><input type="checkbox" name="aptBlinds_Vertical" onchange="updateAptBlindsNotes()"><label>Vertical Blinds</label></div>
+                                <div class="checkbox-item"><input type="checkbox" name="aptBlinds_Curtains" onchange="updateAptBlindsNotes()"><label>Curtains</label></div>
+                                <div class="checkbox-item"><input type="checkbox" name="aptBlinds_Plantation" onchange="updateAptBlindsNotes()"><label>Plantation</label></div>
+                                <div class="checkbox-item"><input type="checkbox" name="aptBlinds_Other" onchange="updateAptBlindsNotes()"><label>Other</label></div>
+                            </div>
+                        </div>
+                        <div id="aptBlindsRollerNotes" class="form-group hidden">
+                            <label>Roller Blinds — Areas</label>
+                            <textarea name="aptBlindsRollerNotes" placeholder="e.g., Living room, Bedroom 1"></textarea>
+                        </div>
+                        <div id="aptBlindsVerticalNotes" class="form-group hidden">
+                            <label>Vertical Blinds — Areas</label>
+                            <textarea name="aptBlindsVerticalNotes" placeholder="e.g., Living room, Bedroom 2"></textarea>
+                        </div>
+                        <div id="aptBlindsCurtainsNotes" class="form-group hidden">
+                            <label>Curtains — Areas</label>
+                            <textarea name="aptBlindsCurtainsNotes" placeholder="e.g., Master bedroom, Dining"></textarea>
+                        </div>
+                        <div id="aptBlindsPlantationNotes" class="form-group hidden">
+                            <label>Plantation — Areas</label>
+                            <textarea name="aptBlindsPlantationNotes" placeholder="e.g., Front windows, Study"></textarea>
+                        </div>
+                        <div id="aptBlindsOtherNotes" class="form-group hidden">
+                            <label>Other — Details & Areas</label>
+                            <textarea name="aptBlindsOtherNotes" placeholder="Type and areas"></textarea>
                         </div>
 
                         <div class="form-group">
@@ -1276,6 +1348,45 @@
                     </div>
                     
                     <div id="appliancesContainer"></div>
+
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #eee;">
+                        <div class="form-group">
+                            <label>Air Conditioning</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" name="hasAirCon" value="Yes" onchange="document.getElementById('airConDetails').classList.remove('hidden')">
+                                    <label>Yes</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" name="hasAirCon" value="No" checked onchange="document.getElementById('airConDetails').classList.add('hidden')">
+                                    <label>No</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="airConDetails" class="hidden">
+                            <div id="airConUnitsContainer"></div>
+                            <button type="button" class="add-btn" onclick="addAirConUnit()">+ Add A/C Unit</button>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #eee;">
+                        <div class="form-group">
+                            <label>Hot Water System</label>
+                            <select name="hotWaterType">
+                                <option value="">— Select —</option>
+                                <option value="Electric">Electric</option>
+                                <option value="Gas">Gas</option>
+                                <option value="Solar">Solar</option>
+                                <option value="Heat Pump">Heat Pump</option>
+                                <option value="Instantaneous Gas">Instantaneous Gas</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Hot Water Notes</label>
+                            <textarea name="hotWaterNotes" placeholder="Brand, age, location, capacity..."></textarea>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- SECTION 8: WARDROBE -->
@@ -1350,41 +1461,6 @@
                     <div id="smokeAlarmNotes" class="form-group hidden">
                         <label>Smoke Alarm Notes</label>
                         <textarea name="smokeAlarmNotes" placeholder="Locations, last tested, expiry dates..."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Hot Water System</label>
-                        <select name="hotWaterType">
-                            <option value="">— Select —</option>
-                            <option value="Electric">Electric</option>
-                            <option value="Gas">Gas</option>
-                            <option value="Solar">Solar</option>
-                            <option value="Heat Pump">Heat Pump</option>
-                            <option value="Instantaneous Gas">Instantaneous Gas</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Hot Water Notes</label>
-                        <textarea name="hotWaterNotes" placeholder="Brand, age, location, capacity..."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Air Conditioning</label>
-                        <div class="radio-group">
-                            <div class="radio-item">
-                                <input type="radio" name="hasAirCon" value="Yes" onchange="document.getElementById('airConDetails').classList.remove('hidden')">
-                                <label>Yes</label>
-                            </div>
-                            <div class="radio-item">
-                                <input type="radio" name="hasAirCon" value="No" checked onchange="document.getElementById('airConDetails').classList.add('hidden')">
-                                <label>No</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="airConDetails" class="hidden">
-                        <div id="airConUnitsContainer"></div>
-                        <button type="button" class="add-btn" onclick="addAirConUnit()">+ Add A/C Unit</button>
                     </div>
 
                     <div class="form-group">
@@ -1672,7 +1748,7 @@
         let airConUnitCount = 0;
         let strataContactCount = 1;
 
-        const defaultAppliances = ['Air Con', 'Oven', 'Cooktop', 'Dishwasher', 'Rangehood', 'Dryer'];
+        const defaultAppliances = ['Oven', 'Cooktop', 'Dishwasher', 'Rangehood', 'Dryer'];
 
         // Initialize form
         document.addEventListener('DOMContentLoaded', () => {
@@ -2133,6 +2209,24 @@
             saveSession();
         }
 
+        // BLINDS NOTES (House)
+        function updateBlindsNotes() {
+            const types = ['Roller', 'Vertical', 'Curtains', 'Plantation', 'Other'];
+            types.forEach(t => {
+                const checked = document.querySelector(`input[name="blinds_${t}"]`)?.checked;
+                document.getElementById(`blinds${t}Notes`).classList.toggle('hidden', !checked);
+            });
+        }
+
+        // BLINDS NOTES (Apt)
+        function updateAptBlindsNotes() {
+            const types = ['Roller', 'Vertical', 'Curtains', 'Plantation', 'Other'];
+            types.forEach(t => {
+                const checked = document.querySelector(`input[name="aptBlinds_${t}"]`)?.checked;
+                document.getElementById(`aptBlinds${t}Notes`).classList.toggle('hidden', !checked);
+            });
+        }
+
         // BALCONY
         function updateBalconyNotes() {
             const hasBalcony = document.querySelector('input[name="hasBalcony"]:checked')?.value;
@@ -2579,6 +2673,23 @@
             if (isHouse) {
                 const furn = gv('furnished', 'radio'), pets = gv('petsAllowed', 'radio');
                 html += `<div style="${lineS}">Furnished: ${furn} &nbsp;|&nbsp; Pets: ${pets}</div>`;
+                // Aspect
+                {
+                    const asp = gv('aspect', 'textarea');
+                    if (has(asp)) html += `<div style="${lineS}">Aspect: ${asp}</div>`;
+                }
+                // Blinds
+                {
+                    const bTypes = [['Roller','blinds_Roller','blindsRollerNotes'],['Vertical','blinds_Vertical','blindsVerticalNotes'],['Curtains','blinds_Curtains','blindsCurtainsNotes'],['Plantation','blinds_Plantation','blindsPlantationNotes'],['Other','blinds_Other','blindsOtherNotes']];
+                    let bParts = [];
+                    bTypes.forEach(([label, chkName, noteName]) => {
+                        if (isChk(chkName)) {
+                            const n = gv(noteName, 'textarea');
+                            bParts.push(`${label}${has(n) ? ' (' + n + ')' : ''}`);
+                        }
+                    });
+                    if (bParts.length) html += `<div style="${lineS}">Blinds: ${bParts.join(' &nbsp;|&nbsp; ')}</div>`;
+                }
                 // NBN
                 const nbn = gv('nbnConnection', 'radio'), nbnN = gv('nbnNotes', 'textarea');
                 if (nbn === 'Yes') {
@@ -2599,28 +2710,17 @@
                 if (poolHeat === 'Yes') {
                     html += `<div style="${lineS}">Pool heating: Yes${has(poolHeatN) ? ' — ' + poolHeatN : ''}</div>`;
                 }
-                // Pool
+                // Pool (show No Pool or Yes with cert)
                 const hasPool = gv('hasPool', 'radio');
                 if (hasPool === 'Yes') {
                     const poolCert = gv('poolCertificate', 'radio'), poolExp = gv('poolCertExpiry');
-                    let poolLine = 'Swimming pool: Yes';
-                    if (has(poolCert) && poolCert === 'Yes') poolLine += ` &nbsp;|&nbsp; Compliance cert exp: ${poolExp}`;
+                    let poolLine = 'Pool: Yes';
+                    if (poolCert === 'Yes' && has(poolExp)) poolLine += ` &nbsp;|&nbsp; Compliance cert exp: ${poolExp}`;
+                    else if (poolCert === 'No') poolLine += ' &nbsp;|&nbsp; No compliance cert';
                     html += `<div style="${lineS}">${poolLine}</div>`;
+                } else {
+                    html += `<div style="${lineS}">Pool: No</div>`;
                 }
-                // Car space
-                let carParts = [];
-                if (isChk('carspaceType_Garage')) {
-                    let cp = `Garage: ${gv('garageSpaces') || '0'}`;
-                    if (has(gv('garageNotes'))) cp += ` (${gv('garageNotes')})`;
-                    carParts.push(cp);
-                }
-                if (isChk('carspaceType_Carport')) {
-                    let cp = `Carport: ${gv('carportSpaces') || '0'}`;
-                    if (has(gv('carportNotes'))) cp += ` (${gv('carportNotes')})`;
-                    carParts.push(cp);
-                }
-                if (isChk('carspaceType_Street')) carParts.push('Street parking');
-                if (carParts.length) html += `<div style="${lineS}">Car space: <b>${totalCars}</b> — ${carParts.join(' &nbsp;|&nbsp; ')}</div>`;
             } else {
                 let featParts = [];
                 if (has(gv('floorLevel'))) featParts.push(`Level: ${gv('floorLevel')}`);
@@ -2628,6 +2728,23 @@
                 featParts.push(`Furnished: ${gv('furnishedApt', 'radio')}`);
                 featParts.push(`Pets: ${gv('petsAllowedApt', 'radio')}`);
                 html += `<div style="${lineS}">${featParts.join(' &nbsp;|&nbsp; ')}</div>`;
+                // Aspect (Apt)
+                {
+                    const asp = gv('aptAspect', 'textarea');
+                    if (has(asp)) html += `<div style="${lineS}">Aspect: ${asp}</div>`;
+                }
+                // Blinds (Apt)
+                {
+                    const bTypes = [['Roller','aptBlinds_Roller','aptBlindsRollerNotes'],['Vertical','aptBlinds_Vertical','aptBlindsVerticalNotes'],['Curtains','aptBlinds_Curtains','aptBlindsCurtainsNotes'],['Plantation','aptBlinds_Plantation','aptBlindsPlantationNotes'],['Other','aptBlinds_Other','aptBlindsOtherNotes']];
+                    let bParts = [];
+                    bTypes.forEach(([label, chkName, noteName]) => {
+                        if (isChk(chkName)) {
+                            const n = gv(noteName, 'textarea');
+                            bParts.push(`${label}${has(n) ? ' (' + n + ')' : ''}`);
+                        }
+                    });
+                    if (bParts.length) html += `<div style="${lineS}">Blinds: ${bParts.join(' &nbsp;|&nbsp; ')}</div>`;
+                }
 
                 const balc = gv('hasBalcony', 'radio'), balcN = gv('balconyNotes', 'textarea');
                 const fac = gv('buildingFacilities', 'textarea');
@@ -2652,26 +2769,14 @@
                 if (aptNbn === 'Yes') {
                     html += `<div style="${lineS}">NBN: Yes${has(aptNbnN) ? ' — ' + aptNbnN : ''}</div>`;
                 }
-
-                // Apt car & storage
-                let aptCarLine = `Car space: ${gv('aptCarspaceCount') || '0'}`;
-                if (has(gv('aptCarspaceType', 'radio'))) aptCarLine += ` (${gv('aptCarspaceType', 'radio')})`;
-                if (has(gv('aptCarspaceNumber'))) aptCarLine += ` #${gv('aptCarspaceNumber')}`;
-                if (has(gv('aptCarspaceLevel'))) aptCarLine += ` Lvl ${gv('aptCarspaceLevel')}`;
-                const stor = gv('hasStorage', 'radio');
-                if (stor === 'Yes') {
-                    aptCarLine += ` &nbsp;|&nbsp; Storage: ${gv('storageNumber') || 'Yes'}`;
-                    if (has(gv('storageLevel'))) aptCarLine += ` (${gv('storageLevel')})`;
-                }
-                html += `<div style="${lineS}">${aptCarLine}</div>`;
             }
-            // Wardrobes (under Features, after car space)
+            // Wardrobes (under Features)
             const wBI = isChk('wardrobeBuiltIn'), wWI = isChk('wardrobeWalkIn');
             if (wBI || wWI) {
                 let wp = [];
                 if (wBI) { const n = gv('wardrobeBuiltInNotes', 'textarea'); wp.push(`Built-in${has(n) ? ' — ' + n : ''}`); }
                 if (wWI) { const n = gv('wardrobeWalkInNotes', 'textarea'); wp.push(`Walk-in${has(n) ? ' — ' + n : ''}`); }
-                html += `<div style="${lineS}"><b>Wardrobes:</b> ${wp.join(' &nbsp;|&nbsp; ')}</div>`;
+                html += `<div style="${lineS}">Wardrobes: ${wp.join(' &nbsp;|&nbsp; ')}</div>`;
             }
 
             // ── ACCOMMODATION (level table — only table we keep, content is short/controlled) ──
@@ -2708,6 +2813,33 @@
                 if (has(laundry) && laundry !== 'None') ldParts.push(`Laundry: ${laundry}`);
                 if (dryer === 'Yes') ldParts.push('Dryer: Yes');
                 if (ldParts.length) html += `<div style="${lineS}">${ldParts.join(' &nbsp;|&nbsp; ')}</div>`;
+            }
+            // Car space (under Accommodation)
+            if (isHouse) {
+                let carParts = [];
+                if (isChk('carspaceType_Garage')) {
+                    let cp = `Garage: ${gv('garageSpaces') || '0'}`;
+                    if (has(gv('garageNotes'))) cp += ` (${gv('garageNotes')})`;
+                    carParts.push(cp);
+                }
+                if (isChk('carspaceType_Carport')) {
+                    let cp = `Carport: ${gv('carportSpaces') || '0'}`;
+                    if (has(gv('carportNotes'))) cp += ` (${gv('carportNotes')})`;
+                    carParts.push(cp);
+                }
+                if (isChk('carspaceType_Street')) carParts.push('Street parking');
+                if (carParts.length) html += `<div style="${lineS}">Car space: ${totalCars} — ${carParts.join(' &nbsp;|&nbsp; ')}</div>`;
+            } else {
+                let aptCarLine = `Car space: ${gv('aptCarspaceCount') || '0'}`;
+                if (has(gv('aptCarspaceType', 'radio'))) aptCarLine += ` (${gv('aptCarspaceType', 'radio')})`;
+                if (has(gv('aptCarspaceNumber'))) aptCarLine += ` #${gv('aptCarspaceNumber')}`;
+                if (has(gv('aptCarspaceLevel'))) aptCarLine += ` Lvl ${gv('aptCarspaceLevel')}`;
+                const stor = gv('hasStorage', 'radio');
+                if (stor === 'Yes') {
+                    aptCarLine += ` &nbsp;|&nbsp; Storage: ${gv('storageNumber') || 'Yes'}`;
+                    if (has(gv('storageLevel'))) aptCarLine += ` (${gv('storageLevel')})`;
+                }
+                html += `<div style="${lineS}">${aptCarLine}</div>`;
             }
 
             // ── FLOORING ──
@@ -2753,23 +2885,7 @@
                 }
             }
             if (appChecked.length) html += `<div style="${lineS}">${appChecked.join(' &nbsp;|&nbsp; ')}</div>`;
-
-            // Security
-            const hasAlarm = gv('hasAlarm', 'radio'), alarmCode = gv('alarmCode', 'textarea');
-            if (hasAlarm === 'Yes') {
-                html += `<div style="${lineS}"><b>Security Alarm:</b> Yes${has(alarmCode) ? ' — Code: ' + alarmCode : ''}</div>`;
-            }
-            // Smoke Alarms
-            const smokeType = gv('smokeAlarmType', 'radio'), smokeN = gv('smokeAlarmNotes', 'textarea');
-            if (has(smokeType) && smokeType !== 'None') {
-                html += `<div style="${lineS}">Smoke alarms: ${smokeType}${has(smokeN) ? ' — ' + smokeN : ''}</div>`;
-            }
-            // Hot Water
-            const hwType = gv('hotWaterType'), hwN = gv('hotWaterNotes', 'textarea');
-            if (has(hwType)) {
-                html += `<div style="${lineS}">Hot water: ${hwType}${has(hwN) ? ' — ' + hwN : ''}</div>`;
-            }
-            // Air Conditioning
+            // Air Conditioning (under Appliances)
             const hasAC = gv('hasAirCon', 'radio');
             if (hasAC === 'Yes') {
                 let acParts = [];
@@ -2784,16 +2900,32 @@
                 }
                 html += `<div style="${lineS}">Air con: ${acParts.length ? acParts.join(' &nbsp;|&nbsp; ') : 'Yes'}</div>`;
             }
-            // Access Instructions
-            const accessInst = gv('accessInstructions', 'textarea');
-            if (has(accessInst)) {
-                html += `<div style="${lineS}"><b>Access:</b> ${accessInst}</div>`;
+            // Hot Water (under Appliances, after AC)
+            const hwType = gv('hotWaterType'), hwN = gv('hotWaterNotes', 'textarea');
+            if (has(hwType)) {
+                html += `<div style="${lineS}">Hot water: ${hwType}${has(hwN) ? ' — ' + hwN : ''}</div>`;
+            }
+
+            // Security
+            const hasAlarm = gv('hasAlarm', 'radio'), alarmCode = gv('alarmCode', 'textarea');
+            if (hasAlarm === 'Yes') {
+                html += `<div style="${lineS}">Security Alarm: Yes${has(alarmCode) ? ' — Code: ' + alarmCode : ''}</div>`;
+            }
+            // Smoke Alarms
+            const smokeType = gv('smokeAlarmType', 'radio'), smokeN = gv('smokeAlarmNotes', 'textarea');
+            if (has(smokeType) && smokeType !== 'None') {
+                html += `<div style="${lineS}">Smoke alarms: ${smokeType}${has(smokeN) ? ' — ' + smokeN : ''}</div>`;
             }
 
             // ── CONDITION ──
             html += `<div style="${secHead}">Condition</div>`;
             const condition = gv('condition', 'radio'), defects = gv('defects', 'textarea');
-            html += `<div style="${lineS}"><b>${condition || 'Good'}</b>${has(defects) ? ' — ' + defects : ''}</div>`;
+            html += `<div style="${lineS}">${condition || 'Good'}${has(defects) ? ' — ' + defects : ''}</div>`;
+            // Access Instructions (under Condition)
+            const accessInst = gv('accessInstructions', 'textarea');
+            if (has(accessInst)) {
+                html += `<div style="${lineS}">Access: ${accessInst}</div>`;
+            }
 
             // ── MAINTENANCE (house) ──
             if (isHouse) {
@@ -2857,7 +2989,11 @@
                 const v = gv(field);
                 if (has(v)) tlParts.push(`${label}: ${v}`);
             });
-            if (tlParts.length) html += `<div style="${lineS}">${tlParts.join(' &nbsp;|&nbsp; ')}</div>`;
+            if (tlParts.length) {
+                html += `<div style="${lineS}">${tlParts.join(' &nbsp;|&nbsp; ')}</div>`;
+            } else {
+                html += `<div style="${lineS}">TBC</div>`;
+            }
 
             // ── NOTES ──
             const notes = gv('notes', 'textarea');
